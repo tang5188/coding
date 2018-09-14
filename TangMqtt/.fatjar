@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Fri Sep 14 13:24:18 CST 2018
+onejar.license.required=true
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=false
+jarname=TangMqtt_fat.jar
+manifest.mergeall=true
+manifest.mainclass=com.tang.mqtt.MainCls
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
