@@ -8,3 +8,9 @@ QuartzDotNetDemo/QuartzDotNetDemo/job_scheduling_data_2_0.xsd
 Weather_Python/venv/Lib/
 Weather_Python/venv/Scripts/
 Weather_Python/.idea/workspace.xml
+ArcFaceSample/ArcFaceSample/obj/
+ArcFaceSample/ArcFaceSample/bin/
+ArcFaceSample/ArcFaceCore/obj/
+ArcFaceSample/.vs/
+ArcFaceSample/ArcFaceCore/bin/
+.gitattributes
