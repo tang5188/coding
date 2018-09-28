@@ -21,7 +21,8 @@ namespace ArcFaceCore
         private string AppID;
         private string AfdKey;
 
-        private IntPtr hEngine = IntPtr.Zero;
+        private IntPtr dEngine = IntPtr.Zero;
+        private IntPtr pMem = IntPtr.Zero;
 
         /// <summary>
         /// 初始化人脸检测
@@ -32,23 +33,23 @@ namespace ArcFaceCore
         {
             this.AppID = appID;
             this.AfdKey = afdKey;
+            this.pMem = Marshal.AllocHGlobal(this.detectSize);
         }
 
         /// <summary>
-        /// 初始化引擎内存缓冲区
+        /// 初始化人脸检测引擎
         /// </summary>
         /// <returns></returns>
         public int InitFaceEngine()
         {
-            if (this.hEngine != IntPtr.Zero) return 0;
+            if (this.dEngine != IntPtr.Zero) return 0;
 
             IntPtr detectEngine = IntPtr.Zero;
-            IntPtr pMem = Marshal.AllocHGlobal(this.detectSize);
             int retCode = AFDFunction.AFD_FSDK_InitialFaceEngine(this.AppID, this.AfdKey, pMem, detectSize, ref detectEngine, (int)AFD_FSDK_OrientPriority.AFD_FSDK_OPF_0_HIGHER_EXT, nScale, nMaxFaceNum);
 
             if (retCode == 0)
             {
-                this.hEngine = detectEngine;
+                this.dEngine = detectEngine;
             }
             return retCode;
         }
@@ -60,8 +61,62 @@ namespace ArcFaceCore
         /// <returns></returns>
         public AFD_FSDK_FACERES DetectFace(Bitmap image)
         {
-            if (this.hEngine == IntPtr.Zero) return default(AFD_FSDK_FACERES);
+            if (this.dEngine == IntPtr.Zero) return default(AFD_FSDK_FACERES);
 
+            //入参
+            IntPtr offInputPtr = MakeImageInput_ASVLOFFSCREEN(image);
+            //返参
+            AFD_FSDK_FACERES faceRes = new AFD_FSDK_FACERES();
+            IntPtr faceResPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceRes));
+
+            int detectResult = AFDFunction.AFD_FSDK_StillImageFaceDetection(this.dEngine, offInputPtr, ref faceResPtr);
+            if (detectResult == 0)
+            {
+                faceRes = (AFD_FSDK_FACERES)Marshal.PtrToStructure(faceResPtr, typeof(AFD_FSDK_FACERES));
+            }
+            return faceRes;
+        }
+
+        /// <summary>
+        /// 引擎资源释放
+        /// </summary>
+        /// <returns></returns>
+        public int UninitFaceEngine()
+        {
+            if (this.dEngine == IntPtr.Zero) return -1;
+
+            int ret = AFDFunction.AFD_FSDK_UninitialFaceEngine(this.dEngine);
+            if (ret == 0) this.dEngine = IntPtr.Zero;
+
+            return ret;
+        }
+
+        /// <summary>
+        /// 多个人脸范围的取得
+        /// </summary>
+        /// <param name="faceCount"></param>
+        /// <param name="facePtr"></param>
+        /// <returns></returns>
+        public static MRECT[] ConvertMRECT(int faceCount, IntPtr facePtr)
+        {
+            MRECT[] rects = new MRECT[faceCount];
+
+            int perSize = Marshal.SizeOf(typeof(MRECT));
+            for (int i = 0; i < faceCount; i++)
+            {
+                MRECT rect = (MRECT)Marshal.PtrToStructure(facePtr + i * perSize, typeof(MRECT));
+                rects[i] = rect;
+            }
+            return rects;
+        }
+
+        /// <summary>
+        /// Image入参做成
+        /// </summary>
+        /// <param name="image"></param>
+        /// <returns></returns>
+        public static IntPtr MakeImageInput_ASVLOFFSCREEN(Bitmap image)
+        {
             int width = 0;
             int height = 0;
             int pitch = 0;
@@ -81,52 +136,11 @@ namespace ArcFaceCore
             //入参
             IntPtr offInputPtr = Marshal.AllocHGlobal(Marshal.SizeOf(offInput));
             Marshal.StructureToPtr(offInput, offInputPtr, false);
-            //返参
-            AFD_FSDK_FACERES faceRes = new AFD_FSDK_FACERES();
-            IntPtr faceResPtr = Marshal.AllocHGlobal(Marshal.SizeOf(faceRes));
 
-            int detectResult = AFDFunction.AFD_FSDK_StillImageFaceDetection(this.hEngine, offInputPtr, ref faceResPtr);
-            if (detectResult == 0)
-            {
-                faceRes = (AFD_FSDK_FACERES)Marshal.PtrToStructure(faceResPtr, typeof(AFD_FSDK_FACERES));
-            }
-            return faceRes;
+            return offInputPtr;
         }
 
-        /// <summary>
-        /// 引擎资源释放
-        /// </summary>
-        /// <returns></returns>
-        public int UninitFaceEngine()
-        {
-            if (this.hEngine == IntPtr.Zero) return -1;
-
-            int ret = AFDFunction.AFD_FSDK_UninitialFaceEngine(this.hEngine);
-            if (ret == 0) this.hEngine = IntPtr.Zero;
-
-            return ret;
-        }
-
-        /// <summary>
-        /// 多个人脸范围的取得
-        /// </summary>
-        /// <param name="faceCount"></param>
-        /// <param name="facePtr"></param>
-        /// <returns></returns>
-        public MRECT[] ConvertMRECT(int faceCount, IntPtr facePtr)
-        {
-            MRECT[] rects = new MRECT[faceCount];
-
-            int perSize = Marshal.SizeOf(typeof(MRECT));
-            for (int i = 0; i < faceCount; i++)
-            {
-                MRECT rect = (MRECT)Marshal.PtrToStructure(facePtr + i * perSize, typeof(MRECT));
-                rects[i] = rect;
-            }
-            return rects;
-        }
-
-        private byte[] ReadBmp(Bitmap image, ref int width, ref int height, ref int pitch)
+        public static byte[] ReadBmp(Bitmap image, ref int width, ref int height, ref int pitch)
         {
             //将Bitmap锁定到系统内存中,获得BitmapData
             BitmapData data = image.LockBits(new Rectangle(0, 0, image.Width, image.Height), ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);

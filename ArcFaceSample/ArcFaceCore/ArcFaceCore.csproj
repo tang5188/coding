@@ -46,6 +46,7 @@
     <Compile Include="AFR\AFRFunction.cs" />
     <Compile Include="ArcFaceDetection.cs" />
     <Compile Include="AFR\AFRStruct.cs" />
+    <Compile Include="ArcFaceRecognition.cs" />
     <Compile Include="ComDef.cs" />
     <Compile Include="AFD\AFDStruct.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

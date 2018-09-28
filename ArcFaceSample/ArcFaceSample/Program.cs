@@ -19,7 +19,7 @@ namespace ArcFaceSample
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmFaceDetection());
+            Application.Run(new FrmMain());
         }
     }
 }

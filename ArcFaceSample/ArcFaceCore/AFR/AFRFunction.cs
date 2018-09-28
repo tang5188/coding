@@ -26,7 +26,7 @@ namespace ArcFaceCore
         ///     MERR_NO_MEMORY  内存不足 
         /// </returns>
         [DllImport(@".\assembly\libarcsoft_fsdk_face_recognition.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr AFR_FSDK_InitialEngine(string AppId, string SDKKey, IntPtr pMem, int lMemSize, ref IntPtr phEngine);
+        public static extern int AFR_FSDK_InitialEngine(string AppId, string SDKKey, IntPtr pMem, int lMemSize, ref IntPtr phEngine);
 
         /// <summary>
         /// 获取脸部特征参数
@@ -37,7 +37,7 @@ namespace ArcFaceCore
         /// <param name="pFaceModels">提取的脸部特征信息</param>
         /// <returns></returns>
         [DllImport(@".\assembly\libarcsoft_fsdk_face_recognition.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr AFR_FSDK_ExtractFRFeature(IntPtr hEngine, IntPtr pInputImage, IntPtr pFaceRes, ref IntPtr pFaceModels);
+        public static extern int AFR_FSDK_ExtractFRFeature(IntPtr hEngine, IntPtr pInputImage, IntPtr pFaceRes, IntPtr pFaceModels);
 
         /// <summary>
         /// 脸部特征比较
@@ -48,7 +48,7 @@ namespace ArcFaceCore
         /// <param name="pfSimilScore">脸部特征相似程度数值</param>
         /// <returns></returns>
         [DllImport(@".\assembly\libarcsoft_fsdk_face_recognition.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr AFR_FSDK_FacePairMatching(IntPtr hEngine, IntPtr reffeature, IntPtr probefeature, ref float pfSimilScore);
+        public static extern int AFR_FSDK_FacePairMatching(IntPtr hEngine, IntPtr reffeature, IntPtr probefeature, ref float pfSimilScore);
 
         /// <summary>
         /// 销毁引擎，释放相应资源
@@ -56,7 +56,7 @@ namespace ArcFaceCore
         /// <param name="hEngine">引擎handle</param>
         /// <returns></returns>
         [DllImport(@".\assembly\libarcsoft_fsdk_face_recognition.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr AFR_FSDK_UninitialEngine(IntPtr hEngine);
+        public static extern int AFR_FSDK_UninitialEngine(IntPtr hEngine);
 
         /// <summary>
         /// 获取SDK版本信息参数
@@ -64,6 +64,6 @@ namespace ArcFaceCore
         /// <param name="hEngine">引擎handle</param>
         /// <returns></returns>
         [DllImport(@".\assembly\libarcsoft_fsdk_face_recognition.dll", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr AFR_FSDK_GetVersion(IntPtr hEngine);
+        public static extern int AFR_FSDK_GetVersion(IntPtr hEngine);
     }
 }

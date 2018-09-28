@@ -28,12 +28,16 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.btnFaceDetect = new System.Windows.Forms.Button();
             this.pic1 = new System.Windows.Forms.PictureBox();
             this.pic2 = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.btnFileChoose = new System.Windows.Forms.Button();
+            this.btnReloadFeature = new System.Windows.Forms.Button();
+            this.panel = new System.Windows.Forms.FlowLayoutPanel();
+            this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pic1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pic2)).BeginInit();
             this.tableLayoutPanel1.SuspendLayout();
@@ -41,11 +45,12 @@
             // 
             // btnFaceDetect
             // 
-            this.btnFaceDetect.Location = new System.Drawing.Point(639, 11);
+            this.btnFaceDetect.Location = new System.Drawing.Point(599, 11);
             this.btnFaceDetect.Name = "btnFaceDetect";
             this.btnFaceDetect.Size = new System.Drawing.Size(75, 23);
             this.btnFaceDetect.TabIndex = 0;
-            this.btnFaceDetect.Text = "人脸检测";
+            this.btnFaceDetect.Text = "人脸识别";
+            this.toolTip1.SetToolTip(this.btnFaceDetect, "相似度：0.75");
             this.btnFaceDetect.UseVisualStyleBackColor = true;
             this.btnFaceDetect.Click += new System.EventHandler(this.btnFaceDetect_Click);
             // 
@@ -55,7 +60,7 @@
             this.pic1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pic1.Location = new System.Drawing.Point(3, 3);
             this.pic1.Name = "pic1";
-            this.pic1.Size = new System.Drawing.Size(382, 391);
+            this.pic1.Size = new System.Drawing.Size(382, 421);
             this.pic1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pic1.TabIndex = 1;
             this.pic1.TabStop = false;
@@ -66,7 +71,7 @@
             this.pic2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pic2.Location = new System.Drawing.Point(391, 3);
             this.pic2.Name = "pic2";
-            this.pic2.Size = new System.Drawing.Size(382, 391);
+            this.pic2.Size = new System.Drawing.Size(382, 421);
             this.pic2.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pic2.TabIndex = 2;
             this.pic2.TabStop = false;
@@ -85,7 +90,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(776, 397);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(776, 427);
             this.tableLayoutPanel1.TabIndex = 3;
             // 
             // textBox1
@@ -93,12 +98,12 @@
             this.textBox1.Location = new System.Drawing.Point(12, 12);
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(540, 21);
+            this.textBox1.Size = new System.Drawing.Size(500, 21);
             this.textBox1.TabIndex = 4;
             // 
             // btnFileChoose
             // 
-            this.btnFileChoose.Location = new System.Drawing.Point(558, 11);
+            this.btnFileChoose.Location = new System.Drawing.Point(518, 11);
             this.btnFileChoose.Name = "btnFileChoose";
             this.btnFileChoose.Size = new System.Drawing.Size(75, 23);
             this.btnFileChoose.TabIndex = 5;
@@ -106,11 +111,33 @@
             this.btnFileChoose.UseVisualStyleBackColor = true;
             this.btnFileChoose.Click += new System.EventHandler(this.btnFileChoose_Click);
             // 
+            // btnReloadFeature
+            // 
+            this.btnReloadFeature.Location = new System.Drawing.Point(720, 11);
+            this.btnReloadFeature.Name = "btnReloadFeature";
+            this.btnReloadFeature.Size = new System.Drawing.Size(68, 23);
+            this.btnReloadFeature.TabIndex = 6;
+            this.btnReloadFeature.Text = "reFeature";
+            this.toolTip1.SetToolTip(this.btnReloadFeature, "特征码重加载");
+            this.btnReloadFeature.UseVisualStyleBackColor = true;
+            this.btnReloadFeature.Click += new System.EventHandler(this.btnReloadFeature_Click);
+            // 
+            // panel
+            // 
+            this.panel.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel.Location = new System.Drawing.Point(12, 474);
+            this.panel.Name = "panel";
+            this.panel.Size = new System.Drawing.Size(776, 125);
+            this.panel.TabIndex = 7;
+            // 
             // FrmFaceDetection
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(800, 611);
+            this.Controls.Add(this.panel);
+            this.Controls.Add(this.btnReloadFeature);
             this.Controls.Add(this.btnFileChoose);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.tableLayoutPanel1);
@@ -134,6 +161,9 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.Button btnFileChoose;
+        private System.Windows.Forms.Button btnReloadFeature;
+        private System.Windows.Forms.FlowLayoutPanel panel;
+        private System.Windows.Forms.ToolTip toolTip1;
     }
 }
 
