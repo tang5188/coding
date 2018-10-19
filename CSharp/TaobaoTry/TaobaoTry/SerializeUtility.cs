@@ -21,8 +21,15 @@ namespace TaobaoTry
         public static T JsonDeserizlize2<T>(string jsonStr, params JsonConverter[] converters)
              where T : class
         {
-            T t = JsonConvert.DeserializeObject<T>(jsonStr, converters) as T;
-            return t;
+            try
+            {
+                T t = JsonConvert.DeserializeObject<T>(jsonStr, converters) as T;
+                return t;
+            }
+            catch
+            {
+                return default(T);
+            }
         }
     }
 }
