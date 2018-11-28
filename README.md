@@ -29,3 +29,16 @@
   虹软开发者key：https://ai.arcsoft.com.cn/ucenter/resource/openPlatform/index.html <br/>
   sdk可从官网下载（也已经保存到网盘：Study\Software\人脸识别\虹软） <br/>
   关联地址：https://blog.csdn.net/feishixin、https://blog.csdn.net/feishixin/article/details/77097308 <br/>
+  
+## AndroidColorPlate 智慧色板
+  https://github.com/tang5188/coding/tree/master/AndroidColorPlate <br/>
+  关联博客：https://blog.csdn.net/lmj623565791/article/details/45788433 <br/>
+  关联代码：https://github.com/hongyangAndroid/Android_Blog_Demos <br/>
+   
+## AndroidUsbCamera 安卓USB摄像头 
+  https://github.com/tang5188/coding/tree/master/AndroidUsbCamera <br/>
+  关联博文：https://blog.csdn.net/andrexpert/article/details/78324181 <br/>
+  关联代码：https://github.com/jiangdongguo/AndroidUSBCamera <br/>
+  终极代码：https://github.com/saki4510t/UVCCamera <br/>
+  
+  
