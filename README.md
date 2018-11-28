@@ -28,7 +28,8 @@
   使用虹软sdk开发人脸识别相关的程序，.Net版 <br/>
   虹软开发者key：https://ai.arcsoft.com.cn/ucenter/resource/openPlatform/index.html <br/>
   sdk可从官网下载（也已经保存到网盘：Study\Software\人脸识别\虹软） <br/>
-  关联地址：https://blog.csdn.net/feishixin、https://blog.csdn.net/feishixin/article/details/77097308 <br/>
+  关联地址：https://blog.csdn.net/feishixin <br/>
+    https://blog.csdn.net/feishixin/article/details/77097308 <br/>
   
 ## AndroidColorPlate 智慧色板
   https://github.com/tang5188/coding/tree/master/AndroidColorPlate <br/>
