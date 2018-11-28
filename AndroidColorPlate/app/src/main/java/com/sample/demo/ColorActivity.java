@@ -28,6 +28,8 @@ public class ColorActivity extends BaseTouchActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         x.view().inject(this);
+        Log.d(TAG, "---onCreate");
+
         //当前房间号
         roomId = getIntent().getStringExtra("room_id");
         Log.i(TAG, "open roomId:" + roomId);
@@ -44,11 +46,47 @@ public class ColorActivity extends BaseTouchActivity {
         if (drawableIds == null ||
                 drawableIds.size() == 0) return;
         //创建相应的显示图层
-        view.RefreshLayerDrawable(drawableIds);
+        view.RefreshLayerDrawable(this.roomId, drawableIds);
     }
 
     @Override
     protected String GetCurrentRoomId() {
         return roomId;
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG, "---onStart");
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "---onResume");
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "---onRestart");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        Log.d(TAG, "---onPause");
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "---onStop");
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "---onDestroy");
     }
 }

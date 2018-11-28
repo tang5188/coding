@@ -16,10 +16,12 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 
+import java.math.RoundingMode;
 import java.util.List;
 import java.util.Random;
 
 import com.sample.demo.R;
+import com.sample.demo.common.PrefUtils;
 import com.sample.demo.common.TwoTuple;
 
 /**
@@ -28,6 +30,9 @@ import com.sample.demo.common.TwoTuple;
 public class ColorLayerImageView extends android.support.v7.widget.AppCompatImageView {
 
     private Context context;
+
+    //房间号
+    private String roomId;
     //图片的size、资源号
     private Size size;
     private List<Integer> drawableIds;
@@ -40,13 +45,19 @@ public class ColorLayerImageView extends android.support.v7.widget.AppCompatImag
     }
 
     //设定当前画面布局
-    public void RefreshLayerDrawable(List<Integer> drawableIds) {
+    public void RefreshLayerDrawable(String roomId, List<Integer> drawableIds) {
+        this.roomId = roomId;
         this.drawableIds = drawableIds;
 
         Drawable[] layers = new Drawable[this.drawableIds.size()];
         //向布局中设定
         for (int i = 0; i < this.drawableIds.size(); i++) {
-            layers[i] = context.getDrawable(this.drawableIds.get(i));
+            Drawable drawable = context.getDrawable(this.drawableIds.get(i));
+            //设定保存的颜色
+            int color = PrefUtils.getInt(context, this.roomId + "_" + i, -1);
+            if (color != -1) drawable.setColorFilter(color, PorterDuff.Mode.SRC_IN);
+
+            layers[i] = drawable;
         }
         drawables = new LayerDrawable(layers);
         this.setImageDrawable(drawables);
@@ -77,7 +88,10 @@ public class ColorLayerImageView extends android.support.v7.widget.AppCompatImag
                     Drawable drawable1 = this.context.getDrawable(R.drawable.crab_mask5);
                     drawables.setDrawable(drawable.First, drawable1);
                 } else {
-                    drawable.Second.setColorFilter(randomColor(), PorterDuff.Mode.SRC_IN);
+                    int randomColor = randomColor();
+                    drawable.Second.setColorFilter(randomColor, PorterDuff.Mode.SRC_IN);
+                    //保存设定
+                    PrefUtils.putInt(context, this.roomId + "_" + drawable.First, randomColor);
                 }
                 i++;
             }

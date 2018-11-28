@@ -14,6 +14,31 @@
         android:scaleType="center" />
 
     <LinearLayout
+        android:id="@+id/llSelColor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="15dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="@id/view_room"
+        app:layout_constraintLeft_toLeftOf="@+id/view_room">
+
+        <Button
+            android:id="@+id/btn_color_all"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:background="@drawable/button_round_shap_color"
+            android:text="整体换色" />
+
+        <Button
+            android:id="@+id/btn_color_part"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:layout_marginTop="5dp"
+            android:background="@drawable/button_round_shap_color"
+            android:text="局部换色" />
+    </LinearLayout>
+
+    <LinearLayout
         android:id="@+id/llContainer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
