@@ -36,4 +36,6 @@ dependencies {
     implementation files('src/main/jniLibs/facerecognition.jar')
     implementation 'com.guo.android_extend:android-extend:1.0.5'
     implementation 'org.xutils:xutils:3.5.0'
+    implementation files('src/main/jniLibs/ageestimation.jar')
+    implementation files('src/main/jniLibs/genderestimation.jar')
 }

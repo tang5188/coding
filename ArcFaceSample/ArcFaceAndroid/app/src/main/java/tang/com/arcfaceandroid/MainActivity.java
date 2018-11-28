@@ -34,7 +34,7 @@ import tang.com.arcfaceandroid.util.PathGet;
 @ContentView(R.layout.activity_main)
 public class MainActivity extends Activity {
 
-    private final String TAG = this.getClass().toString();
+    private final String TAG = "MainActivity";
 
     private static final int REQUEST_CODE_IAMGE_CAMERA = 1;
     private static final int REQUEST_CODE_IAMGE_OP = 2;
@@ -61,18 +61,22 @@ public class MainActivity extends Activity {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         if (which == 1) {       //拍摄照片
-                            Intent intent = new Intent("android.media.action.IMAGE_CAPTURE");
                             ContentValues values = new ContentValues(1);
                             values.put(MediaStore.Images.Media.MIME_TYPE, "iamge/jpeg");
                             Uri uri = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
-                            ((MyApplication) MainActivity.this.getApplicationContext()).setCaptureImage(uri);
+                            MyApplication myApp = (MyApplication) MainActivity.this.getApplicationContext();
+                            myApp.setCaptureImage(uri);
+
+                            Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                             intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
+
                             startActivityForResult(intent, REQUEST_CODE_IAMGE_CAMERA);
                         } else {            //打开图片
-                            Intent getImageByAlbum = new Intent(Intent.ACTION_GET_CONTENT);
-                            getImageByAlbum.addCategory(Intent.CATEGORY_OPENABLE);
-                            getImageByAlbum.setType("image/jpeg");
-                            startActivityForResult(getImageByAlbum, REQUEST_CODE_IAMGE_OP);
+                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+                            intent.setType("image/jpeg");
+
+                            startActivityForResult(intent, REQUEST_CODE_IAMGE_OP);
                         }
                     }
                 })
@@ -102,7 +106,7 @@ public class MainActivity extends Activity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == REQUEST_CODE_IAMGE_OP && resultCode == RESULT_OK) {
+        if (requestCode == REQUEST_CODE_IAMGE_OP && resultCode == RESULT_OK) {                  //选择照片后的处理
             Uri mPath = data.getData();
             String file = PathGet.getPath(MainActivity.this, mPath);
             Bitmap bmp = MyApplication.decodeImage(file);
@@ -112,17 +116,17 @@ public class MainActivity extends Activity {
                 Log.i(TAG, "bmp [" + bmp.getWidth() + "," + bmp.getHeight() + "]");
             }
             startRegister(bmp, file);
-        } else if (requestCode == REQUEST_CODE_OP) {
+        } else if (requestCode == REQUEST_CODE_IAMGE_CAMERA && resultCode == RESULT_OK) {       //使用摄像头拍照后的处理
+            Uri mPath = ((MyApplication) MainActivity.this.getApplicationContext()).getCaptureImage();
+            String file = PathGet.getPath(MainActivity.this, mPath);
+            Bitmap bmp = MyApplication.decodeImage(file);
+            startRegister(bmp, file);
+        } else if (requestCode == REQUEST_CODE_OP) {                                            //注册画面or检测画面返回的处理
             Log.i(TAG, "result=" + resultCode);
             if (data == null) return;
             Bundle bundle = data.getExtras();
             String path = bundle.getString("imagePath");
             Log.i(TAG, "path=" + path);
-        } else if (requestCode == REQUEST_CODE_IAMGE_CAMERA && resultCode == RESULT_OK) {
-            Uri mPath = ((MyApplication) MainActivity.this.getApplicationContext()).getCaptureImage();
-            String file = PathGet.getPath(MainActivity.this, mPath);
-            Bitmap bmp = MyApplication.decodeImage(file);
-            startRegister(bmp, file);
         }
     }
 
@@ -137,7 +141,7 @@ public class MainActivity extends Activity {
 
     //启动检测画面
     private void startDetector(int camera) {
-        Intent intent = new Intent(MainActivity.this, RegisterActivity.class);
+        Intent intent = new Intent(MainActivity.this, DetectActivity.class);
         intent.putExtra("Camera", camera);
         startActivityForResult(intent, REQUEST_CODE_OP);
     }

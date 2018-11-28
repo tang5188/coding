@@ -54,7 +54,7 @@ import java.util.Map;
 @ContentView(R.layout.activity_register)
 public class RegisterActivity extends Activity implements SurfaceHolder.Callback {
 
-    private final String TAG = this.getClass().toString();
+    private final String TAG = "RegisterActivity";
     private final static int MSG_CODE = 0x1000;
     private final static int MSG_EVENT_REG = 0x1001;
     private final static int MSG_EVENT_NO_FACE = 0x1002;

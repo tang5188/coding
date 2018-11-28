@@ -118,7 +118,7 @@ public class FaceDB {
         return false;
     }
 
-    private boolean loadFaces() {
+    public boolean loadFaces() {
         if (loadInfo()) {
             try {
                 for (FaceRegist face : mRegister) {
