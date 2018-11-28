@@ -192,6 +192,7 @@ public class RegisterActivity extends Activity implements SurfaceHolder.Callback
                     }
                     error1 = engine1.AFR_FSDK_GetVersion(version1);
                     Log.d("com.arcsoft", "AFR_FSDK_GetVersion=" + version1.toString() + ", " + error1.getCode());
+                    Log.i(TAG, "AFR_FSDK_ExtractFRFeature:" + data.length + ", " + mBitmap.getWidth() + ", " + mBitmap.getHeight() + ", " + new Rect(result.get(0).getRect()).toString() + ", " + result.get(0).getDegree());
                     error1 = engine1.AFR_FSDK_ExtractFRFeature(data, mBitmap.getWidth(), mBitmap.getHeight(), AFR_FSDKEngine.CP_PAF_NV21, new Rect(result.get(0).getRect()), result.get(0).getDegree(), result1);
                     Log.d("com.arcsoft", "AFR_FSDK_ExtractFRFeature=" + result1.getFeatureData()[0] + ", " + result1.getFeatureData()[1] + ", " + result1.getFeatureData()[2] + ", " + error1.getCode());
                     if (error1.getCode() == error1.MOK) {

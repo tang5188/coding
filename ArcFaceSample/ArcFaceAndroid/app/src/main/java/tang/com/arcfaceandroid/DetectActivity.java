@@ -155,7 +155,8 @@ public class DetectActivity extends Activity implements Camera.AutoFocusCallback
                 }
                 if (mCamera != null) {
                     mWidth = mCamera.getParameters().getPreviewSize().width;
-                    mHeight = mCamera.getParameters().getPictureSize().height;
+                    mHeight = mCamera.getParameters().getPreviewSize().height;
+                    Log.i(TAG, "size make:" + mWidth + "," + mHeight);
                 }
                 return mCamera;
             }
@@ -299,7 +300,7 @@ public class DetectActivity extends Activity implements Camera.AutoFocusCallback
                 final int rotate = mCameraRotate;
 
                 long time = System.currentTimeMillis();
-                Log.i(TAG, mImageNV21.length + ", " + mWidth + ", " + mHeight + ", " + mAFT_fsdkFace.getRect().toString() + ", " + mAFT_fsdkFace.getDegree());
+                Log.i(TAG, "AFR_FSDK_ExtractFRFeature:" + mImageNV21.length + ", " + mWidth + ", " + mHeight + ", " + mAFT_fsdkFace.getRect().toString() + ", " + mAFT_fsdkFace.getDegree());
                 AFR_FSDKError error = engine.AFR_FSDK_ExtractFRFeature(mImageNV21, mWidth, mHeight, AFR_FSDKEngine.CP_PAF_NV21, mAFT_fsdkFace.getRect(), mAFT_fsdkFace.getDegree(), result);
                 Log.i(TAG, "AFR_FSDK_ExtractFRFeature cost:" + (System.currentTimeMillis() - time) + "ms");
                 Log.i(TAG, "Face=" + result.getFeatureData()[0] + "," + result.getFeatureData()[1] + "," + result.getFeatureData()[2] + ", errorCode=" + error.getCode());
