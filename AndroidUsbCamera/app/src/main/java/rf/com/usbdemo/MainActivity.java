@@ -495,9 +495,11 @@ public class MainActivity extends Activity implements CameraDialog.CameraDialogP
         if (canceled) {
             showShortMsg("取消操作");
         }
+        Log.i(TAG, "Surface.onDialogResult");
     }
 
     public boolean isCameraOpened() {
+        Log.i(TAG, "Surface.isCameraOpened");
         return mCameraHelper.isCameraOpened();
     }
 
@@ -507,11 +509,12 @@ public class MainActivity extends Activity implements CameraDialog.CameraDialogP
             mCameraHelper.startPreview(mUVCCameraView);
             isPreview = true;
         }
+        Log.i(TAG, "onSurfaceCreated");
     }
 
     @Override
     public void onSurfaceChanged(CameraViewInterface view, Surface surface, int width, int height) {
-
+        Log.i(TAG, "onSurfaceChanged");
     }
 
     @Override
@@ -520,6 +523,7 @@ public class MainActivity extends Activity implements CameraDialog.CameraDialogP
             mCameraHelper.stopPreview();
             isPreview = false;
         }
+        Log.i(TAG, "onSurfaceDestroy");
     }
 
 
