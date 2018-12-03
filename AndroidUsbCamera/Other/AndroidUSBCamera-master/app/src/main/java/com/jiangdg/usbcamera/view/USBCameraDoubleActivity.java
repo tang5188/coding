@@ -213,14 +213,16 @@ public class USBCameraDoubleActivity extends AppCompatActivity {
     private void setCameraParameter(UsbDevice device, UVCCamera camera) {
         try {
             //设置预览尺寸 根据设备自行设置
-            camera.setPreviewSize(640,
-                    480,
-                    1,
-                    15,
-                    UVCCamera.FRAME_FORMAT_YUYV,
-                    // UVCCamera.FRAME_FORMAT_MJPEG,//此格式设置15帧生效
-                    0.4f);
-            Log.d(TAG, "**设置参数成功=" + device.getProductName() + ", " + camera.getDeviceName());
+            //UVCCamera.FRAME_FORMAT_YUYV
+            //UVCCamera.FRAME_FORMAT_MJPEG, //此格式设置15帧生效
+
+            if (device.getProductName().equals(CameraName1)) {
+                camera.setPreviewSize(640, 480, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.4f);
+                Log.d(TAG, "**设置参数成功1=FRAME_FORMAT_MJPEG, " + device.getProductName() + ", " + camera.getDeviceName());
+            } else if (device.getProductName().equals(CameraName2)) {
+                camera.setPreviewSize(640, 480, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.4f);
+                Log.d(TAG, "**设置参数成功2=FRAME_FORMAT_MJPEG, " + device.getProductName() + ", " + camera.getDeviceName());
+            }
         } catch (final IllegalArgumentException e) {
             Log.d(TAG, "**设置参数失败=" + device.getProductName() + ", " + camera.getDeviceName());
             return;
