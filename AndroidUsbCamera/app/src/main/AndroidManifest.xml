@@ -19,11 +19,7 @@
 
         </activity>
 
-        <activity android:name=".DoubleUsbCameraActivity">
-
-        </activity>
-
-        <activity android:name=".DoubleCamera2Activity">
+        <activity android:name=".DoubleCameraActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

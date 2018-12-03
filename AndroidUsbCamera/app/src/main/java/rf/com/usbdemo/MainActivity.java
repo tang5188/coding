@@ -499,7 +499,7 @@ public class MainActivity extends Activity implements CameraDialog.CameraDialogP
     }
 
     public boolean isCameraOpened() {
-        Log.i(TAG, "Surface.isCameraOpened");
+        Log.i(TAG, "Surface.isCameraOpened1");
         return mCameraHelper.isCameraOpened();
     }
 
