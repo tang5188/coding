@@ -22,8 +22,8 @@ public class USBCameraDoubleActivity extends AppCompatActivity {
 
     private static final String TAG = "USBCameraDoubleActivity";
 
-    public static final String CameraName1 = "USB2.0 Camera";
-    public static final String CameraName2 = "XCX-S58M21";
+    public static final String CameraName1 = "USB 2.0 Camera";
+    public static final String CameraName2 = "USB 2.0 PC Camera";
 
     private TextView tvCamera1, tvCamera2;
     private UVCCameraTextureView mTexture1, mTexture2;
@@ -217,10 +217,10 @@ public class USBCameraDoubleActivity extends AppCompatActivity {
             //UVCCamera.FRAME_FORMAT_MJPEG, //此格式设置15帧生效
 
             if (device.getProductName().equals(CameraName1)) {
-                camera.setPreviewSize(640, 480, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.4f);
+                camera.setPreviewSize(640, 480, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.5f);
                 Log.d(TAG, "**设置参数成功1=FRAME_FORMAT_MJPEG, " + device.getProductName() + ", " + camera.getDeviceName());
             } else if (device.getProductName().equals(CameraName2)) {
-                camera.setPreviewSize(640, 480, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.4f);
+                camera.setPreviewSize(1280, 1024, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.5f);
                 Log.d(TAG, "**设置参数成功2=FRAME_FORMAT_MJPEG, " + device.getProductName() + ", " + camera.getDeviceName());
             }
         } catch (final IllegalArgumentException e) {
