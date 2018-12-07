@@ -23,19 +23,25 @@
 
 package com.serenegiant.usbcameratest7;
 
+import android.graphics.Camera;
 import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.CompoundButton;
 import android.widget.ImageButton;
+import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.serenegiant.common.BaseActivity;
 import com.serenegiant.usb.CameraDialog;
+import com.serenegiant.usb.DeviceFilter;
 import com.serenegiant.usb.USBMonitor;
 import com.serenegiant.usb.USBMonitor.OnDeviceConnectListener;
 import com.serenegiant.usb.USBMonitor.UsbControlBlock;
@@ -44,6 +50,8 @@ import com.serenegiant.usbcameracommon.UVCCameraHandler;
 import com.serenegiant.widget.CameraViewInterface;
 import com.serenegiant.widget.UVCCameraTextureView;
 
+import java.util.List;
+
 /**
  * Show side by side view from two camera.
  * You cane record video images from both camera, but secondarily started recording can not record
@@ -51,6 +59,10 @@ import com.serenegiant.widget.UVCCameraTextureView;
  * on the device) now.
  */
 public final class MainActivity extends BaseActivity implements CameraDialog.CameraDialogParent {
+
+    private static final String CameraL = "USB 2.0 PC Camera";
+    private static final String CameraR = "USB 2.0 Camera";
+
     private static final boolean DEBUG = false;    // FIXME set false when production
     private static final String TAG = "MainActivity";
 
@@ -71,30 +83,54 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private Handler hander = new Handler();
     private int timer = 0;
 
+    private Switch s_camera_L, s_camera_R;
+    private TextView tv_camera_name_L, tv_camera_name_R;
+
+    private DeviceFilter deviceFilter = null;
+    private int widthR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
+    private int heightR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
+    private int widthL = UVCCamera.DEFAULT_PREVIEW_WIDTH;
+    private int heightL = UVCCamera.DEFAULT_PREVIEW_WIDTH;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        widthR = 640;
+        heightR = 480;
+        widthL = 640;
+        heightL = 480;
+
         findViewById(R.id.RelativeLayout1).setOnClickListener(mOnClickListener);
         mUVCCameraViewL = (CameraViewInterface) findViewById(R.id.camera_view_L);
-        mUVCCameraViewL.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float) UVCCamera.DEFAULT_PREVIEW_HEIGHT);
+        mUVCCameraViewL.setAspectRatio(widthL / (float) heightL);
         ((UVCCameraTextureView) mUVCCameraViewL).setOnClickListener(mOnClickListener);
         mCaptureButtonL = (ImageButton) findViewById(R.id.capture_button_L);
         mCaptureButtonL.setOnClickListener(mOnClickListener);
         mCaptureButtonL.setVisibility(View.INVISIBLE);
-        mHandlerL = UVCCameraHandler.createHandler(this, mUVCCameraViewL, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[0]);
+        mHandlerL = UVCCameraHandler.createHandler(this, mUVCCameraViewL, widthL, heightL, BANDWIDTH_FACTORS[0]);
 
         mUVCCameraViewR = (CameraViewInterface) findViewById(R.id.camera_view_R);
-        mUVCCameraViewR.setAspectRatio(UVCCamera.DEFAULT_PREVIEW_WIDTH / (float) UVCCamera.DEFAULT_PREVIEW_HEIGHT);
+        mUVCCameraViewR.setAspectRatio(widthR / (float) heightR);
         ((UVCCameraTextureView) mUVCCameraViewR).setOnClickListener(mOnClickListener);
         mCaptureButtonR = (ImageButton) findViewById(R.id.capture_button_R);
         mCaptureButtonR.setOnClickListener(mOnClickListener);
         mCaptureButtonR.setVisibility(View.INVISIBLE);
-        mHandlerR = UVCCameraHandler.createHandler(this, mUVCCameraViewR, UVCCamera.DEFAULT_PREVIEW_WIDTH, UVCCamera.DEFAULT_PREVIEW_HEIGHT, BANDWIDTH_FACTORS[1]);
+        mHandlerR = UVCCameraHandler.createHandler(this, mUVCCameraViewR, widthR, heightR, BANDWIDTH_FACTORS[1]);
 
+        deviceFilter = new DeviceFilter(-1, -1, 239, 2, -1, null, null, null);
         mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
+        mUSBMonitor.setDeviceFilter(deviceFilter);
+
+        ((UVCCameraTextureView) mUVCCameraViewL).setRotation(90);
+        ((UVCCameraTextureView) mUVCCameraViewR).setRotation(90);
+        s_camera_L = (Switch) findViewById(R.id.s_camera_L);
+        s_camera_R = (Switch) findViewById(R.id.s_camera_R);
+        tv_camera_name_L = (TextView) findViewById(R.id.tv_camera_name_L);
+        tv_camera_name_R = (TextView) findViewById(R.id.tv_camera_name_R);
+        s_camera_L.setOnCheckedChangeListener(this.checkedChangeListenerL);
+        s_camera_R.setOnCheckedChangeListener(this.checkedChangeListenerR);
     }
 
     @Override
@@ -140,6 +176,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
         super.onDestroy();
     }
 
+    // region View event
     private final OnClickListener mOnClickListener = new OnClickListener() {
         @Override
         public void onClick(final View view) {
@@ -198,26 +235,81 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
         }
     };
 
+    private final CompoundButton.OnCheckedChangeListener checkedChangeListenerL = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (mHandlerL == null) return;
+            if (mHandlerL.isRecording()) return;
+            if (isChecked) {
+                if (!mHandlerL.isOpened()) {
+                    List<UsbDevice> devices = mUSBMonitor.getDeviceList(deviceFilter);
+                    for (int i = 0; i < devices.size(); i++) {
+                        if (devices.get(i).getProductName().equals(CameraL)) {
+                            UsbControlBlock controlBlock = mUSBMonitor.openDevice(devices.get(i));
+                            mHandlerL.open(controlBlock);
+                            final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
+                            mHandlerL.startPreview(new Surface(st));
+                            break;
+                        }
+                    }
+                } else if (mHandlerL.isOpened() && !mHandlerL.isPreviewing()) {
+                    final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
+                    mHandlerL.startPreview(new Surface(st));
+                }
+            } else if (!isChecked && mHandlerL.isPreviewing()) {
+                mHandlerL.stopPreview();
+            }
+        }
+    };
+
+    private final CompoundButton.OnCheckedChangeListener checkedChangeListenerR = new CompoundButton.OnCheckedChangeListener() {
+        @Override
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if (mHandlerR == null) return;
+            if (mHandlerR.isRecording()) return;
+            if (isChecked) {
+                if (!mHandlerR.isOpened()) {
+                    List<UsbDevice> devices = mUSBMonitor.getDeviceList(deviceFilter);
+                    for (int i = 0; i < devices.size(); i++) {
+                        if (devices.get(i).getProductName().equals(CameraR)) {
+                            UsbControlBlock controlBlock = mUSBMonitor.openDevice(devices.get(i));
+                            mHandlerR.open(controlBlock);
+                            final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
+                            mHandlerR.startPreview(new Surface(st));
+                            break;
+                        }
+                    }
+                } else if (mHandlerR.isOpened() && !mHandlerR.isPreviewing()) {
+                    final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
+                    mHandlerR.startPreview(new Surface(st));
+                }
+            } else if (!isChecked && mHandlerR.isPreviewing()) {
+                mHandlerR.stopPreview();
+            }
+        }
+    };
+    // endregion
+
     private final OnDeviceConnectListener mOnDeviceConnectListener = new OnDeviceConnectListener() {
         @Override
         public void onAttach(final UsbDevice device) {
             if (DEBUG) Log.v(TAG, "onAttach:" + device);
             Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
-            if (device.getDeviceClass() == 239 && device.getDeviceSubclass() == 2) {
+            if (device.getDeviceClass() == 239 && device.getDeviceSubclass() == 2) {//根据相机信息选择选需要打开的相机
                 hander.postDelayed(new Runnable() {
                     @Override
                     public void run() {
                         timer++;
                         mUSBMonitor.requestPermission(device);
                     }
-                }, timer * 20);
+                }, timer * 200);
             }
         }
 
         @Override
         public void onConnect(final UsbDevice device, final UsbControlBlock ctrlBlock, final boolean createNew) {
             if (DEBUG) Log.v(TAG, "onConnect:" + device);
-            if (!mHandlerL.isOpened()) {
+            if (device.getProductName().equals(CameraL) && !mHandlerL.isOpened()) {
                 mHandlerL.open(ctrlBlock);
                 final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
                 mHandlerL.startPreview(new Surface(st));
@@ -226,9 +318,13 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mCaptureButtonL.setVisibility(View.VISIBLE);
+                        tv_camera_name_L.setText(device.getProductName() + ", " + device.getDeviceName());
+                        s_camera_L.setOnCheckedChangeListener(null);
+                        s_camera_L.setChecked(true);
+                        s_camera_L.setOnCheckedChangeListener(checkedChangeListenerL);
                     }
                 });
-            } else if (!mHandlerR.isOpened()) {
+            } else if (device.getProductName().equals(CameraR) && !mHandlerR.isOpened()) {
                 mHandlerR.open(ctrlBlock);
                 final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
                 mHandlerR.startPreview(new Surface(st));
@@ -237,6 +333,10 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mCaptureButtonR.setVisibility(View.VISIBLE);
+                        tv_camera_name_R.setText(device.getProductName() + ", " + device.getDeviceName());
+                        s_camera_R.setOnCheckedChangeListener(null);
+                        s_camera_R.setChecked(true);
+                        s_camera_R.setOnCheckedChangeListener(checkedChangeListenerR);
                     }
                 });
             }

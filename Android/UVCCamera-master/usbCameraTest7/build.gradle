@@ -24,22 +24,19 @@
 apply plugin: 'com.android.application'
 
 android {
-	compileSdkVersion versionCompiler
-	buildToolsVersion '26.0.2'
-
-	compileOptions {
-		sourceCompatibility javaSourceCompatibility
-		targetCompatibility javaTargetCompatibility
-	}
-	
+    compileSdkVersion versionCompiler
+    buildToolsVersion '26.0.2'
+    compileOptions {
+        sourceCompatibility javaSourceCompatibility
+        targetCompatibility javaTargetCompatibility
+    }
     defaultConfig {
         applicationId "com.serenegiant.usbcameratest7"
-        minSdkVersion 18
-		targetSdkVersion versionTarget
-		versionCode 9
-		versionName "3.00"
+        minSdkVersion 21
+        targetSdkVersion versionTarget
+        versionCode 9
+        versionName "3.00"
     }
-
     buildTypes {
         release {
             minifyEnabled true
@@ -47,6 +44,8 @@ android {
         }
     }
     compileOptions {
+    }
+    productFlavors {
     }
 }
 
