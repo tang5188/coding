@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#ff000000"
+    tools:context=".MainActivity"
+    tools:ignore="MergeRootFrame">
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Touch screen to select camera"
+        android:textColor="#FFFF0000" />
+
+    <LinearLayout
+        android:id="@+id/ll_L"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textView1">
+
+        <Switch
+            android:id="@+id/s_camera_L"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Left"
+            android:textColor="@color/WHITE" />
+
+        <TextView
+            android:id="@+id/tv_camera_name_L"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/WHITE" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_R"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_L">
+
+        <Switch
+            android:id="@+id/s_camera_R"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Right"
+            android:textColor="@color/WHITE" />
+
+        <TextView
+            android:id="@+id/tv_camera_name_R"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@color/WHITE" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ll_R"
+        android:layout_centerInParent="true"
+        android:baselineAligned="false">
+
+        <RelativeLayout
+            android:id="@+id/camera_layout_L"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.serenegiant.widget.UVCCameraTextureView
+                android:id="@+id/camera_view_L"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/frame_image_L"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/camera_view_L"
+                android:layout_alignTop="@+id/camera_view_L"
+                android:layout_alignRight="@+id/camera_view_L"
+                android:layout_alignBottom="@+id/camera_view_L"
+                android:src="@drawable/border" />
+
+            <ImageButton
+                android:id="@+id/capture_button_L"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignBottom="@id/camera_view_L"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="6dp"
+                android:background="@null"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_camera" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/camera_layout_R"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1">
+
+            <com.serenegiant.widget.UVCCameraTextureView
+                android:id="@+id/camera_view_R"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/frame_image_R"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/camera_view_R"
+                android:layout_alignTop="@+id/camera_view_R"
+                android:layout_alignRight="@+id/camera_view_R"
+                android:layout_alignBottom="@+id/camera_view_R"
+                android:src="@drawable/border" />
+
+            <ImageButton
+                android:id="@+id/capture_button_R"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignBottom="@id/camera_view_R"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="6dp"
+                android:background="@null"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_camera" />
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>
