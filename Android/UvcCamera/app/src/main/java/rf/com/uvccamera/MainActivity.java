@@ -40,7 +40,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private static final String CameraL = "USB 2.0 PC Camera";
     private static final String CameraR = "USB 2.0 Camera";
 
-    private static final boolean DEBUG = false;    // FIXME set false when production
     private static final String TAG = "MainActivity";
 
     private static final float[] BANDWIDTH_FACTORS = {0.5f, 0.5f};
@@ -221,13 +220,29 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                 if (!mHandlerL.isOpened()) {
                     List<UsbDevice> devices = mUSBMonitor.getDeviceList(deviceFilter);
                     for (int i = 0; i < devices.size(); i++) {
-                        if (devices.get(i).getProductName().equals(CameraL)) {
-                            UsbControlBlock controlBlock = mUSBMonitor.openDevice(devices.get(i));
+                        final UsbDevice device = devices.get(i);
+                        if (!device.getProductName().equals(CameraL)) continue;
+
+                        if (!mUSBMonitor.hasPermission(device)) {
+                            //没有权限时，申请权限，然后通过onConnect接口回调打开摄像头
+                            timer = 0;
+                            requestPermission(device);
+                        } else {
+                            //打开摄像头，进行预览
+                            UsbControlBlock controlBlock = mUSBMonitor.openDevice(device);
                             mHandlerL.open(controlBlock);
                             final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
                             mHandlerL.startPreview(new Surface(st));
-                            break;
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mCaptureButtonL.setVisibility(View.VISIBLE);
+                                    tv_camera_name_L.setText(device.getProductName() + ", " + device.getDeviceName());
+                                }
+                            });
                         }
+                        break;
                     }
                 } else if (mHandlerL.isOpened() && !mHandlerL.isPreviewing()) {
                     final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
@@ -248,13 +263,29 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                 if (!mHandlerR.isOpened()) {
                     List<UsbDevice> devices = mUSBMonitor.getDeviceList(deviceFilter);
                     for (int i = 0; i < devices.size(); i++) {
-                        if (devices.get(i).getProductName().equals(CameraR)) {
-                            UsbControlBlock controlBlock = mUSBMonitor.openDevice(devices.get(i));
+                        final UsbDevice device = devices.get(i);
+                        if (!device.getProductName().equals(CameraR)) continue;
+
+                        if (!mUSBMonitor.hasPermission(device)) {
+                            //没有权限时，申请权限，然后通过onConnect接口回调打开摄像头
+                            timer = 0;
+                            requestPermission(device);
+                        } else {
+                            //打开摄像头，进行预览
+                            UsbControlBlock controlBlock = mUSBMonitor.openDevice(device);
                             mHandlerR.open(controlBlock);
                             final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
                             mHandlerR.startPreview(new Surface(st));
-                            break;
+
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    mCaptureButtonR.setVisibility(View.VISIBLE);
+                                    tv_camera_name_R.setText(device.getProductName() + ", " + device.getDeviceName());
+                                }
+                            });
                         }
+                        break;
                     }
                 } else if (mHandlerR.isOpened() && !mHandlerR.isPreviewing()) {
                     final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
@@ -270,23 +301,22 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private final OnDeviceConnectListener mOnDeviceConnectListener = new OnDeviceConnectListener() {
         @Override
         public void onAttach(final UsbDevice device) {
-            if (DEBUG) Log.v(TAG, "onAttach:" + device);
+            if (device.getProductName().equals(CameraL)) {
+                Log.v(TAG, "-----onAttachL:" + device.getProductName());
+            } else if (device.getProductName().equals(CameraR)) {
+                Log.v(TAG, "-----onAttachR:" + device.getProductName());
+            }
+
             Toast.makeText(MainActivity.this, "USB_DEVICE_ATTACHED", Toast.LENGTH_SHORT).show();
             if (device.getDeviceClass() == 239 && device.getDeviceSubclass() == 2) {//根据相机信息选择选需要打开的相机
-                hander.postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        timer++;
-                        mUSBMonitor.requestPermission(device);
-                    }
-                }, timer * 200);
+                requestPermission(device);
             }
         }
 
         @Override
         public void onConnect(final UsbDevice device, final UsbControlBlock ctrlBlock, final boolean createNew) {
-            if (DEBUG) Log.v(TAG, "onConnect:" + device);
             if (device.getProductName().equals(CameraL) && !mHandlerL.isOpened()) {
+                Log.v(TAG, "-----onConnectL:" + device.getProductName());
                 mHandlerL.open(ctrlBlock);
                 final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
                 mHandlerL.startPreview(new Surface(st));
@@ -302,6 +332,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     }
                 });
             } else if (device.getProductName().equals(CameraR) && !mHandlerR.isOpened()) {
+                Log.v(TAG, "-----onConnectR:" + device.getProductName());
                 mHandlerR.open(ctrlBlock);
                 final SurfaceTexture st = mUVCCameraViewR.getSurfaceTexture();
                 mHandlerR.startPreview(new Surface(st));
@@ -321,8 +352,8 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 
         @Override
         public void onDisconnect(final UsbDevice device, final UsbControlBlock ctrlBlock) {
-            if (DEBUG) Log.v(TAG, "onDisconnect:" + device);
             if ((mHandlerL != null) && !mHandlerL.isEqual(device)) {
+                Log.v(TAG, "-----onDisconnectL:" + device.getProductName());
                 queueEvent(new Runnable() {
                     @Override
                     public void run() {
@@ -335,6 +366,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     }
                 }, 0);
             } else if ((mHandlerR != null) && !mHandlerR.isEqual(device)) {
+                Log.v(TAG, "-----onDisconnectR:" + device.getProductName());
                 queueEvent(new Runnable() {
                     @Override
                     public void run() {
@@ -351,15 +383,35 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
 
         @Override
         public void onDettach(final UsbDevice device) {
-            if (DEBUG) Log.v(TAG, "onDettach:" + device);
+            if (device.getProductName().equals(CameraL)) {
+                Log.v(TAG, "-----onDettachL:" + device.getProductName());
+            } else if (device.getProductName().equals(CameraR)) {
+                Log.v(TAG, "-----onDettachR:" + device.getProductName());
+            }
             Toast.makeText(MainActivity.this, "USB_DEVICE_DETACHED", Toast.LENGTH_SHORT).show();
         }
 
         @Override
         public void onCancel(final UsbDevice device) {
-            if (DEBUG) Log.v(TAG, "onCancel:");
+            if (device.getProductName().equals(CameraL)) {
+                Log.v(TAG, "-----onCancelL:" + device.getProductName());
+            } else if (device.getProductName().equals(CameraR)) {
+                Log.v(TAG, "-----onCancelR:" + device.getProductName());
+            }
         }
     };
+
+    //申请权限
+    private void requestPermission(final UsbDevice device) {
+        hander.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Log.v(TAG, "requestPermission:" + device.getProductName());
+                timer++;
+                mUSBMonitor.requestPermission(device);
+            }
+        }, timer * 200);
+    }
 
     /**
      * to access from CameraDialog
