@@ -74,10 +74,10 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        widthL = 1280;
-        heightL = 1024;
-        widthR = 1280;
-        heightR = 720;
+        widthL = 640;
+        heightL = 480;
+        widthR = 640;
+        heightR = 480;
 
         findViewById(R.id.RelativeLayout1).setOnClickListener(mOnClickListener);
         mUVCCameraViewL = (CameraViewInterface) findViewById(R.id.camera_view_L);
