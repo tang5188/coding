@@ -16,58 +16,118 @@
         android:text="Touch screen to select camera"
         android:textColor="#FFFF0000" />
 
-    <LinearLayout
-        android:id="@+id/ll_L"
-        android:layout_width="wrap_content"
+    <GridLayout
+        android:id="@+id/gl_i"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/textView1">
+        android:layout_below="@id/textView1"
+        android:columnCount="2"
+        android:rowCount="2">
 
-        <Switch
-            android:id="@+id/s_camera_L"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:id="@+id/ll_L"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Left"
-            android:textColor="@color/WHITE" />
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_columnWeight="1">
 
-        <TextView
-            android:id="@+id/tv_camera_name_L"
-            android:layout_width="wrap_content"
+            <Switch
+                android:id="@+id/s_camera_L"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Left"
+                android:textColor="@color/WHITE" />
+
+            <TextView
+                android:id="@+id/tv_camera_name_L"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/WHITE" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_R"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/WHITE" />
-    </LinearLayout>
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_columnWeight="1">
 
-    <LinearLayout
-        android:id="@+id/ll_R"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ll_L">
+            <Switch
+                android:id="@+id/s_camera_R"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Right"
+                android:textColor="@color/WHITE" />
 
-        <Switch
-            android:id="@+id/s_camera_R"
-            android:layout_width="wrap_content"
+            <TextView
+                android:id="@+id/tv_camera_name_R"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/WHITE" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_3"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Right"
-            android:textColor="@color/WHITE" />
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1">
 
-        <TextView
-            android:id="@+id/tv_camera_name_R"
-            android:layout_width="wrap_content"
+            <Switch
+                android:id="@+id/s_camera_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3"
+                android:textColor="@color/WHITE" />
+
+            <TextView
+                android:id="@+id/tv_camera_name_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/WHITE" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_4"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:textColor="@color/WHITE" />
-    </LinearLayout>
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/ll_R"
-        android:layout_centerInParent="true"
-        android:baselineAligned="false">
+            <Switch
+                android:id="@+id/s_camera_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4"
+                android:textColor="@color/WHITE" />
+
+            <TextView
+                android:id="@+id/tv_camera_name_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/WHITE" />
+        </LinearLayout>
+    </GridLayout>
+
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/gl_i"
+        android:columnCount="2"
+        android:rowCount="2">
 
         <RelativeLayout
             android:id="@+id/camera_layout_L"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1">
 
             <com.serenegiant.widget.UVCCameraTextureView
                 android:id="@+id/camera_view_L"
@@ -100,9 +160,12 @@
 
         <RelativeLayout
             android:id="@+id/camera_layout_R"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1">
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="0"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1">
 
             <com.serenegiant.widget.UVCCameraTextureView
                 android:id="@+id/camera_view_R"
@@ -132,6 +195,82 @@
                 android:scaleType="centerCrop"
                 android:src="@android:drawable/ic_menu_camera" />
         </RelativeLayout>
-    </LinearLayout>
+
+        <RelativeLayout
+            android:id="@+id/camera_layout_3"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:layout_column="0"
+            android:layout_columnWeight="1">
+
+            <com.serenegiant.widget.UVCCameraTextureView
+                android:id="@+id/camera_view_3"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/frame_image_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/camera_view_3"
+                android:layout_alignTop="@+id/camera_view_3"
+                android:layout_alignRight="@+id/camera_view_3"
+                android:layout_alignBottom="@+id/camera_view_3"
+                android:src="@drawable/border" />
+
+            <ImageButton
+                android:id="@+id/capture_button_3"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignBottom="@id/camera_view_3"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="6dp"
+                android:background="@null"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_camera" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/camera_layout_4"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_row="1"
+            android:layout_rowWeight="1"
+            android:layout_column="1"
+            android:layout_columnWeight="1">
+
+            <com.serenegiant.widget.UVCCameraTextureView
+                android:id="@+id/camera_view_4"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/frame_image_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignLeft="@+id/camera_view_4"
+                android:layout_alignTop="@+id/camera_view_4"
+                android:layout_alignRight="@+id/camera_view_4"
+                android:layout_alignBottom="@+id/camera_view_4"
+                android:src="@drawable/border" />
+
+            <ImageButton
+                android:id="@+id/capture_button_4"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignBottom="@id/camera_view_4"
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="6dp"
+                android:background="@null"
+                android:scaleType="centerCrop"
+                android:src="@android:drawable/ic_menu_camera" />
+        </RelativeLayout>
+    </GridLayout>
 
 </RelativeLayout>

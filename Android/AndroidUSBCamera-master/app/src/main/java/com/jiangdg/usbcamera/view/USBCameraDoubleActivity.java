@@ -217,14 +217,15 @@ public class USBCameraDoubleActivity extends AppCompatActivity {
             //UVCCamera.FRAME_FORMAT_MJPEG, //此格式设置15帧生效
 
             if (device.getProductName().equals(CameraName1)) {
-                camera.setPreviewSize(640, 480, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.5f);
+                camera.setPreviewSize(640, 480, 1, 31, UVCCamera.FRAME_FORMAT_MJPEG, 0.5f);
                 Log.d(TAG, "**设置参数成功1=FRAME_FORMAT_MJPEG, " + device.getProductName() + ", " + camera.getDeviceName());
             } else if (device.getProductName().equals(CameraName2)) {
-                camera.setPreviewSize(1280, 1024, 1, 15, UVCCamera.FRAME_FORMAT_YUYV, 0.5f);
+                camera.setPreviewSize(640, 480, 1, 31, UVCCamera.FRAME_FORMAT_MJPEG, 0.5f);
                 Log.d(TAG, "**设置参数成功2=FRAME_FORMAT_MJPEG, " + device.getProductName() + ", " + camera.getDeviceName());
             }
         } catch (final IllegalArgumentException e) {
             Log.d(TAG, "**设置参数失败=" + device.getProductName() + ", " + camera.getDeviceName());
+            e.printStackTrace();
             return;
         }
     }
