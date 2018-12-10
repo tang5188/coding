@@ -1,16 +1,13 @@
 package rf.com.uvccamera;
 
-import android.graphics.Camera;
 import android.graphics.SurfaceTexture;
 import android.hardware.usb.UsbDevice;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Surface;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.ImageButton;
 import android.widget.Switch;
@@ -43,25 +40,10 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     // for accessing USB and USB camera
     private USBMonitor mUSBMonitor;
 
-    private UVCCameraHandler mHandlerR;
-    private CameraViewInterface mUVCCameraViewR;
-    private ImageButton mCaptureButtonR;
-    private Surface mRightPreviewSurface;
-
-    private UVCCameraHandler mHandlerL;
-    private CameraViewInterface mUVCCameraViewL;
-    private ImageButton mCaptureButtonL;
-    private Surface mLeftPreviewSurface;
-
-    private UVCCameraHandler mHandler3;
-    private CameraViewInterface mUVCCameraView3;
-    private ImageButton mCaptureButton3;
-    private Surface m3PreviewSurface;
-
-    private UVCCameraHandler mHandler4;
-    private CameraViewInterface mUVCCameraView4;
-    private ImageButton mCaptureButton4;
-    private Surface m4PreviewSurface;
+    private UVCCameraHandler mHandlerR, mHandlerL, mHandler3, mHandler4;
+    private UVCCameraTextureView mUVCCameraViewR, mUVCCameraViewL, mUVCCameraView3, mUVCCameraView4;
+    private ImageButton mCaptureButtonR, mCaptureButtonL, mCaptureButton3, mCaptureButton4;
+    private Surface mPreviewSurfaceL, mPreviewSurfaceR, mPreviewSurface3, mPreviewSurface4;
 
     private Handler hander = new Handler();
     private int timer = 0;
@@ -70,7 +52,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private TextView tv_camera_name_L, tv_camera_name_R, tv_camera_name_3, tv_camera_name_4;
 
     private DeviceFilter deviceFilter = null;
-    private static final float[] BANDWIDTH_FACTORS = {0.15f, 0.3f, 0.6f, 0.01f};
+    private static final float[] BANDWIDTH_FACTORS = {0.3f, 0.4f, 0.5f, 0.3f};
 
     private int widthR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
     private int heightR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
@@ -91,43 +73,43 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        widthL = 160;
-        heightL = 120;
-        widthR = 320;
-        heightR = 240;
+        widthL = 1280;
+        heightL = 1024;
+        widthR = 1280;
+        heightR = 720;
         width3 = 640;
         height3 = 480;
-        width4 = 640;
-        height4 = 480;
+        width4 = 160;
+        height4 = 120;
 
         findViewById(R.id.RelativeLayout1).setOnClickListener(mOnClickListener);
-        mUVCCameraViewL = (CameraViewInterface) findViewById(R.id.camera_view_L);
+        mUVCCameraViewL = findViewById(R.id.camera_view_L);
         mUVCCameraViewL.setAspectRatio(widthL / (float) heightL);
-        ((UVCCameraTextureView) mUVCCameraViewL).setOnClickListener(mOnClickListener);
+        mUVCCameraViewL.setOnClickListener(mOnClickListener);
         mCaptureButtonL = (ImageButton) findViewById(R.id.capture_button_L);
         mCaptureButtonL.setOnClickListener(mOnClickListener);
         mCaptureButtonL.setVisibility(View.INVISIBLE);
         mHandlerL = UVCCameraHandler.createHandler(this, mUVCCameraViewL, widthL, heightL, BANDWIDTH_FACTORS[0]);
 
-        mUVCCameraViewR = (CameraViewInterface) findViewById(R.id.camera_view_R);
+        mUVCCameraViewR = findViewById(R.id.camera_view_R);
         mUVCCameraViewR.setAspectRatio(widthR / (float) heightR);
-        ((UVCCameraTextureView) mUVCCameraViewR).setOnClickListener(mOnClickListener);
+        mUVCCameraViewR.setOnClickListener(mOnClickListener);
         mCaptureButtonR = (ImageButton) findViewById(R.id.capture_button_R);
         mCaptureButtonR.setOnClickListener(mOnClickListener);
         mCaptureButtonR.setVisibility(View.INVISIBLE);
         mHandlerR = UVCCameraHandler.createHandler(this, mUVCCameraViewR, widthR, heightR, BANDWIDTH_FACTORS[1]);
 
-        mUVCCameraView3 = (CameraViewInterface) findViewById(R.id.camera_view_3);
+        mUVCCameraView3 = findViewById(R.id.camera_view_3);
         mUVCCameraView3.setAspectRatio(width3 / (float) height3);
-        ((UVCCameraTextureView) mUVCCameraView3).setOnClickListener(mOnClickListener);
+        mUVCCameraView3.setOnClickListener(mOnClickListener);
         mCaptureButton3 = (ImageButton) findViewById(R.id.capture_button_3);
         mCaptureButton3.setOnClickListener(mOnClickListener);
         mCaptureButton3.setVisibility(View.INVISIBLE);
         mHandler3 = UVCCameraHandler.createHandler(this, mUVCCameraView3, width3, height3, BANDWIDTH_FACTORS[2]);
 
-        mUVCCameraView4 = (CameraViewInterface) findViewById(R.id.camera_view_4);
+        mUVCCameraView4 = findViewById(R.id.camera_view_4);
         mUVCCameraView4.setAspectRatio(width4 / (float) height4);
-        ((UVCCameraTextureView) mUVCCameraView4).setOnClickListener(mOnClickListener);
+        mUVCCameraView4.setOnClickListener(mOnClickListener);
         mCaptureButton4 = (ImageButton) findViewById(R.id.capture_button_4);
         mCaptureButton4.setOnClickListener(mOnClickListener);
         mCaptureButton4.setVisibility(View.INVISIBLE);
@@ -301,7 +283,8 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private final CompoundButton.OnCheckedChangeListener checkedChangeListener4 = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            checkedChanged(mHandler4, mUVCCameraView4, mCaptureButton4, tv_camera_name_4, Camera4, isChecked);
+            Log.i(TAG, "Left:" + mUVCCameraViewL.getFps() + ", Right:" + mUVCCameraViewR.getFps());
+            //checkedChanged(mHandler4, mUVCCameraView4, mCaptureButton4, tv_camera_name_4, Camera4, isChecked);
         }
     };
 
@@ -366,6 +349,8 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
             }
         }
 
+        private String devNameL = "";
+
         @Override
         public void onConnect(final UsbDevice device, final UsbControlBlock ctrlBlock, final boolean createNew) {
             if (device.getProductName().equals(CameraL) && !mHandlerL.isOpened()) {
@@ -374,6 +359,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                 final SurfaceTexture st = mUVCCameraViewL.getSurfaceTexture();
                 mHandlerL.startPreview(new Surface(st));
                 timer = 0;
+                devNameL = device.getDeviceName();
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -416,6 +402,12 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                         s_camera_3.setOnCheckedChangeListener(checkedChangeListener3);
                     }
                 });
+            } else if (device.getProductName().equals(CameraL) && !mHandler3.isOpened() && !device.getDeviceName().equals(devNameL)) {
+                Log.v(TAG, "-----onConnect4:" + device.getProductName());
+                mHandler4.open(ctrlBlock);
+                final SurfaceTexture st = mUVCCameraView4.getSurfaceTexture();
+                mHandler4.startPreview(new Surface(st));
+                timer = 0;
             }
         }
 
@@ -427,9 +419,9 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mHandlerL.close();
-                        if (mLeftPreviewSurface != null) {
-                            mLeftPreviewSurface.release();
-                            mLeftPreviewSurface = null;
+                        if (mPreviewSurfaceR != null) {
+                            mPreviewSurfaceR.release();
+                            mPreviewSurfaceR = null;
                         }
                         setCameraButton();
                     }
@@ -440,9 +432,9 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mHandlerR.close();
-                        if (mRightPreviewSurface != null) {
-                            mRightPreviewSurface.release();
-                            mRightPreviewSurface = null;
+                        if (mPreviewSurfaceL != null) {
+                            mPreviewSurfaceL.release();
+                            mPreviewSurfaceL = null;
                         }
                         setCameraButton();
                     }
@@ -453,9 +445,9 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mHandler3.close();
-                        if (m3PreviewSurface != null) {
-                            m3PreviewSurface.release();
-                            m3PreviewSurface = null;
+                        if (mPreviewSurface3 != null) {
+                            mPreviewSurface3.release();
+                            mPreviewSurface3 = null;
                         }
                         setCameraButton();
                     }
