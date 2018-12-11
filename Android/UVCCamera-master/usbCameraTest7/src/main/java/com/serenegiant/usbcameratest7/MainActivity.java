@@ -87,20 +87,20 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private TextView tv_camera_name_L, tv_camera_name_R;
 
     private DeviceFilter deviceFilter = null;
-    private int widthR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
-    private int heightR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
     private int widthL = UVCCamera.DEFAULT_PREVIEW_WIDTH;
     private int heightL = UVCCamera.DEFAULT_PREVIEW_WIDTH;
+    private int widthR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
+    private int heightR = UVCCamera.DEFAULT_PREVIEW_WIDTH;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        widthR = 640;
-        heightR = 480;
-        widthL = 640;
-        heightL = 480;
+        widthL = 1280;
+        heightL = 1024;
+        widthR = 1280;
+        heightR = 720;
 
         findViewById(R.id.RelativeLayout1).setOnClickListener(mOnClickListener);
         mUVCCameraViewL = (CameraViewInterface) findViewById(R.id.camera_view_L);
@@ -123,8 +123,6 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
         mUSBMonitor = new USBMonitor(this, mOnDeviceConnectListener);
         mUSBMonitor.setDeviceFilter(deviceFilter);
 
-        ((UVCCameraTextureView) mUVCCameraViewL).setRotation(90);
-        ((UVCCameraTextureView) mUVCCameraViewR).setRotation(90);
         s_camera_L = (Switch) findViewById(R.id.s_camera_L);
         s_camera_R = (Switch) findViewById(R.id.s_camera_R);
         tv_camera_name_L = (TextView) findViewById(R.id.tv_camera_name_L);

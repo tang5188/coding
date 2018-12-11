@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.USBCameraDoubleActivity">
+    tools:context=".view.USBCameraThreeActivity">
 
     <LinearLayout
         android:layout_width="0dp"
@@ -76,6 +76,45 @@
 
             <com.serenegiant.usb.widget.UVCCameraTextureView
                 android:id="@+id/camera_view2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center" />
+
+        </FrameLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:background="#ccc"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <Switch
+                android:id="@+id/switch3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="摄像头3" />
+
+            <TextView
+                android:id="@+id/tvCamera3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:text="摄像头3" />
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <com.serenegiant.usb.widget.UVCCameraTextureView
+                android:id="@+id/camera_view3"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center" />
