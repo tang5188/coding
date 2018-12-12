@@ -219,13 +219,16 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     if (mHandlerL != null) {
                         if (mHandlerL.isOpened()) {
                             if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
-                                if (!mHandlerL.isRecording()) {
-                                    mCaptureButtonL.setColorFilter(0xffff0000);    // turn red
-                                    mHandlerL.startRecording();
-                                } else {
-                                    mCaptureButtonL.setColorFilter(0);    // return to default color
-                                    mHandlerL.stopRecording();
-                                }
+                                //1.录像
+//                                if (!mHandlerL.isRecording()) {
+//                                    mCaptureButtonL.setColorFilter(0xffff0000);    // turn red
+//                                    mHandlerL.startRecording();
+//                                } else {
+//                                    mCaptureButtonL.setColorFilter(0);    // return to default color
+//                                    mHandlerL.stopRecording();
+//                                }
+                                //2.拍照
+                                mHandlerL.captureStill();
                             }
                         }
                     }
@@ -244,13 +247,16 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     if (mHandlerR != null) {
                         if (mHandlerR.isOpened()) {
                             if (checkPermissionWriteExternalStorage() && checkPermissionAudio()) {
-                                if (!mHandlerR.isRecording()) {
-                                    mCaptureButtonR.setColorFilter(0xffff0000);    // turn red
-                                    mHandlerR.startRecording();
-                                } else {
-                                    mCaptureButtonR.setColorFilter(0);    // return to default color
-                                    mHandlerR.stopRecording();
-                                }
+                                //1.录像
+//                                if (!mHandlerR.isRecording()) {
+//                                    mCaptureButtonR.setColorFilter(0xffff0000);    // turn red
+//                                    mHandlerR.startRecording();
+//                                } else {
+//                                    mCaptureButtonR.setColorFilter(0);    // return to default color
+//                                    mHandlerR.stopRecording();
+//                                }
+                                //2.拍照
+                                mHandlerR.captureStill();
                             }
                         }
                     }
@@ -283,8 +289,7 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
     private final CompoundButton.OnCheckedChangeListener checkedChangeListener4 = new CompoundButton.OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            Log.i(TAG, "Left:" + mUVCCameraViewL.getFps() + ", Right:" + mUVCCameraViewR.getFps());
-            //checkedChanged(mHandler4, mUVCCameraView4, mCaptureButton4, tv_camera_name_4, Camera4, isChecked);
+            checkedChanged(mHandler4, mUVCCameraView4, mCaptureButton4, tv_camera_name_4, Camera4, isChecked);
         }
     };
 
@@ -419,9 +424,9 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mHandlerL.close();
-                        if (mPreviewSurfaceR != null) {
-                            mPreviewSurfaceR.release();
-                            mPreviewSurfaceR = null;
+                        if (mPreviewSurfaceL != null) {
+                            mPreviewSurfaceL.release();
+                            mPreviewSurfaceL = null;
                         }
                         setCameraButton();
                     }
@@ -432,9 +437,9 @@ public final class MainActivity extends BaseActivity implements CameraDialog.Cam
                     @Override
                     public void run() {
                         mHandlerR.close();
-                        if (mPreviewSurfaceL != null) {
-                            mPreviewSurfaceL.release();
-                            mPreviewSurfaceL = null;
+                        if (mPreviewSurfaceR != null) {
+                            mPreviewSurfaceR.release();
+                            mPreviewSurfaceR = null;
                         }
                         setCameraButton();
                     }
