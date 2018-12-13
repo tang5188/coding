@@ -19,6 +19,8 @@
 
         </activity>
         <activity android:name=".view.USBCameraThreeActivity">
+        </activity>
+        <activity android:name=".doubleScreen.ScreenMainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
