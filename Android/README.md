@@ -1,3 +1,6 @@
+## Sample 示例代码
+https://github.com/tang5188/coding/tree/master/Android/Sample
+
 ## AndroidUSBCamera-master
 https://github.com/tang5188/coding/tree/master/Android/AndroidUSBCamera-master <br />
 原始代码：https://github.com/jiangdongguo/AndroidUSBCamera
