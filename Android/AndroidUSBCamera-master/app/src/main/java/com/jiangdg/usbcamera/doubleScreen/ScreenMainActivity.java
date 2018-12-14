@@ -154,7 +154,7 @@ public class ScreenMainActivity extends AppCompatActivity {
                 uvcCameraMain.stopPreview();
                 uvcCameraMain.close();
             }
-            if(presentation!=null){
+            if (presentation != null) {
                 presentation.onDestroy();
             }
         } catch (Exception e) {

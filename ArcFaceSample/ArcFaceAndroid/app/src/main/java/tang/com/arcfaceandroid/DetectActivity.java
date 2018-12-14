@@ -40,6 +40,7 @@ import com.arcsoft.genderestimation.ASGE_FSDKVersion;
 import com.guo.android_extend.java.AbsLoop;
 import com.guo.android_extend.java.ExtByteArrayOutputStream;
 import com.guo.android_extend.tools.CameraHelper;
+import com.guo.android_extend.widget.Camera2Manager;
 import com.guo.android_extend.widget.CameraFrameData;
 import com.guo.android_extend.widget.CameraGLSurfaceView;
 import com.guo.android_extend.widget.CameraSurfaceView;
