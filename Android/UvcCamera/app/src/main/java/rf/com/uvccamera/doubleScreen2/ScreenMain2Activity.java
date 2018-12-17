@@ -5,6 +5,8 @@ import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
@@ -21,6 +23,10 @@ public class ScreenMain2Activity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_main2);
+
+        DisplayMetrics displayMetrics = getResources().getDisplayMetrics();
+        Log.e("分辨率", "Density is " + displayMetrics.density + " densityDpi is " + displayMetrics.densityDpi + " height: " + displayMetrics.heightPixels +
+                " width: " + displayMetrics.widthPixels);
 
         DisplayManager mDisplayManager;// 屏幕管理类
         mDisplayManager = (DisplayManager) this.getSystemService(Context.DISPLAY_SERVICE);
