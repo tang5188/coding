@@ -10,8 +10,6 @@ public class MyApplication extends Application {
 
     public static final String TAG = "MyApplication";
 
-    public Display externalDisplay;
-
     private static MyApplication myApplication;
 
     public static MyApplication getInstance() {
@@ -27,12 +25,5 @@ public class MyApplication extends Application {
         super.onCreate();
 
         myApplication = this;
-
-        DisplayManager displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
-        Display[] displays = displayManager.getDisplays(DisplayManager.DISPLAY_CATEGORY_PRESENTATION);
-        Log.d(TAG, "displays count:" + displays.length);
-        if (displays.length > 0) {
-            externalDisplay = displays[0];
-        }
     }
 }

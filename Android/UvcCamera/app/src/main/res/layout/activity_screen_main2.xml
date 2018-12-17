@@ -4,11 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".doubleScreen.ScreenSecondPresentation">
+    tools:context=".doubleScreen2.ScreenMain2Activity">
 
-    <TextureView
-        android:id="@+id/tv_second"
+    <TextView
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:text="main2" />
 
 </android.support.constraint.ConstraintLayout>
