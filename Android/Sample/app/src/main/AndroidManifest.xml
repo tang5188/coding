@@ -10,15 +10,24 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" />
-        <activity android:name=".adapter.BaseAdapterActivity"></activity>
+        <activity android:name=".adapter.BaseAdapterActivity" />
         <activity android:name=".viewPager.ViewPagerActivity">
+
+        </activity>
+        <activity android:name=".asyncTask.AsyncTaskActivity" />
+        <activity android:name=".asyncTask.AsyncTaskImageActivity" />
+        <activity android:name=".asyncTask.AsyncTaskProgressActivity" />
+        <activity android:name=".serviceBind.ServiceBindActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".asyncTask.AsyncTaskActivity"></activity>
+
+        <service
+            android:name=".serviceBind.ServiceTest"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
