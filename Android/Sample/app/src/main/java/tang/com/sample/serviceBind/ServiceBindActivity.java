@@ -72,9 +72,9 @@ public class ServiceBindActivity extends AppCompatActivity implements Button.OnC
                 break;
             case R.id.btn_bind_service:
                 Intent intentBind = new Intent(ServiceBindActivity.this, ServiceTest.class);
-                bindService(intentBind, connection, BIND_AUTO_CREATE);
+                boolean flag = bindService(intentBind, connection, BIND_AUTO_CREATE);
                 isBinding = true;
-                Log.i(TAG, " ----> btn_bind_service click");
+                Log.i(TAG, " ----> btn_bind_service click:" + flag);
                 break;
             case R.id.btn_unbind_service:
                 if (isBinding) {

@@ -7,32 +7,44 @@
     android:orientation="vertical"
     tools:context=".serviceBind.ServiceBindActivity">
 
-    <Button
-        android:id="@+id/btn_start_service"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="开启服务" />
+        android:layout_marginTop="15dp">
 
-    <Button
-        android:id="@+id/btn_stop_service"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="停止服务" />
+        <Button
+            android:id="@+id/btn_start_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="开启服务" />
 
-    <Button
-        android:id="@+id/btn_bind_service"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="绑定服务" />
+        <Button
+            android:id="@+id/btn_stop_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="停止服务" />
+    </LinearLayout>
 
-    <Button
-        android:id="@+id/btn_unbind_service"
+    <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="5dp"
-        android:text="解绑服务" />
+        android:layout_marginTop="15dp">
+
+        <Button
+            android:id="@+id/btn_bind_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="绑定服务" />
+
+        <Button
+            android:id="@+id/btn_unbind_service"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="解绑服务" />
+    </LinearLayout>
 
 </LinearLayout>
