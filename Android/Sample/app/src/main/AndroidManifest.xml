@@ -15,7 +15,8 @@
         <activity android:name=".asyncTask.AsyncTaskActivity" />
         <activity android:name=".asyncTask.AsyncTaskImageActivity" />
         <activity android:name=".asyncTask.AsyncTaskProgressActivity" />
-        <activity android:name=".serviceBind.ServiceBindActivity">
+        <activity android:name=".serviceBind.ServiceBindActivity" />
+        <activity android:name=".serviceAIDL.ServiceAidlActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
