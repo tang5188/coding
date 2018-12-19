@@ -10,6 +10,9 @@
     <!-- 在 屏幕最顶部显示addview-->
     <uses-permission android:name="android.permission.SYSTEM_OVERLAY_WINDOW" />
 
+    <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
+
     <uses-feature
         android:glEsVersion="0x00020000"
         android:required="true" />
@@ -23,10 +26,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".MainActivity" />
-        <activity android:name=".CameraOneActivity"></activity>
-        <activity android:name=".doubleScreen.ScreenMainActivity">
-
-        </activity>
+        <activity android:name=".CameraOneActivity" />
+        <activity android:name=".doubleScreen.ScreenMainActivity" />
         <activity android:name=".doubleScreen2.ScreenMain2Activity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

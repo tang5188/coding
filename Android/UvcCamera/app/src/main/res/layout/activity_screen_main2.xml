@@ -1,21 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:custom="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".doubleScreen2.ScreenMain2Activity">
 
-    <TextView
+    <com.daimajia.slider.library.SliderLayout
+        android:id="@+id/home_slider_ad"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="Main Main Main"
-        android:textSize="50dp" />
+        android:layout_height="match_parent">
 
-    <ImageView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scaleType="center"
-        android:src="@drawable/image1" />
+        <com.daimajia.slider.library.Indicators.PagerIndicator
+            android:id="@+id/home_indicator_ad"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:gravity="center"
+            custom:selected_color="#0095BF"
+            custom:selected_height="6dp"
+            custom:selected_padding_left="5dp"
+            custom:selected_padding_right="5dp"
+            custom:selected_width="6dp"
+            custom:shape="oval"
+            custom:unselected_color="#55333333"
+            custom:unselected_height="6dp"
+            custom:unselected_padding_left="5dp"
+            custom:unselected_padding_right="5dp"
+            custom:unselected_width="6dp"></com.daimajia.slider.library.Indicators.PagerIndicator>
+    </com.daimajia.slider.library.SliderLayout>
 
 </android.support.constraint.ConstraintLayout>
