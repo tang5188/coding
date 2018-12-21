@@ -109,4 +109,15 @@ public class ScreenSecondPresentation extends Presentation {
             e.printStackTrace();
         }
     }
+
+    @Override
+    protected void onStop() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.reset();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+        super.onStop();
+    }
 }

@@ -39,8 +39,6 @@ public class ScreenMainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_screen_main);
-
-        displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
         //显示副屏
         showSecondScreen();
 
@@ -117,9 +115,23 @@ public class ScreenMainActivity extends Activity {
 
     //副屏显示
     private void showSecondScreen() {
+        if (displayManager == null) {
+            displayManager = (DisplayManager) getSystemService(Context.DISPLAY_SERVICE);
+        }
         Display[] displays = displayManager.getDisplays();
         this.presentation = new ScreenSecondPresentation(ScreenMainActivity.this, displays[displays.length - 1]);
         this.presentation.getWindow().setType(WindowManager.LayoutParams.TYPE_SYSTEM_ALERT);
         this.presentation.show();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.reset();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
+        super.onDestroy();
     }
 }
