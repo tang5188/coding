@@ -41,7 +41,6 @@ public class ScreenSecondPresentation extends Presentation {
 
         mMediaPlayer = new MediaPlayer();
         mTextureView = findViewById(R.id.tv_second);
-        mTextureView.setRotation(-90);
 
         mTextureView.setSurfaceTextureListener(new TextureView.SurfaceTextureListener() {
             @Override
@@ -74,7 +73,14 @@ public class ScreenSecondPresentation extends Presentation {
         mMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
             public void onPrepared(MediaPlayer mp) {
-                mMediaPlayer.start();
+                mp.start();
+            }
+        });
+        mMediaPlayer.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                mp.seekTo(0);
+                mp.start();
             }
         });
         mMediaPlayer.setOnErrorListener(new MediaPlayer.OnErrorListener() {
@@ -90,7 +96,8 @@ public class ScreenSecondPresentation extends Presentation {
         // 设置dataSource
         try {
             //路径按实际配置
-            File file = new File("/storage/emulated/0/Movies/0.mp4");
+            File file = new File("/storage/emulated/0/Movies/suning.mp4");
+            if (!file.exists()) return;
 
             mMediaPlayer.setDataSource(file.getPath());
             if (mSurface == null) {
