@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_open_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="打开设备" />
+
+        <Button
+            android:id="@+id/btn_close_device"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="关闭设备" />
+
+        <TextView
+            android:id="@+id/tv_device_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_regist_finger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册指纹" />
+
+        <TextView
+            android:id="@+id/tv_regist_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_search_finger"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="搜索指纹" />
+
+        <TextView
+            android:id="@+id/tv_search_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_down_char1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载指纹左" />
+
+        <Button
+            android:id="@+id/btn_down_char2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="下载指纹右" />
+
+        <TextView
+            android:id="@+id/tv_down_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+
+        <Button
+            android:id="@+id/btn_read_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="读取数量" />
+
+        <Button
+            android:id="@+id/btn_clear_all"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="清空全部" />
+
+        <Button
+            android:id="@+id/btn_clear_spec"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="删除指定" />
+
+        <EditText
+            android:id="@+id/et_spec_page_id"
+            android:layout_width="50dp"
+            android:layout_height="wrap_content"
+            android:inputType="number" />
+
+        <TextView
+            android:id="@+id/tv_char_count_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_finger_char_msg"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
