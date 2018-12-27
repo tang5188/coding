@@ -140,11 +140,6 @@ public class UVCCameraHelper {
         createUVCCamera();
     }
 
-    public void setSize(int width, int height){
-        this.previewWidth = width;
-        this.previewHeight = height;
-    }
-
     public void createUVCCamera() {
         if (mCamView == null)
             throw new NullPointerException("CameraViewInterface cannot be null!");
