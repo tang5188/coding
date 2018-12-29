@@ -32,6 +32,7 @@ import java.util.List;
  * You cane record video images from both camera, but secondarily started recording can not record
  * audio because of limitation of Android AudioRecord(only one instance of AudioRecord is available
  * on the device) now.
+ * rf摄像头测试，视频监控：rf.com.uvccamera2.R
  */
 public final class MainActivity extends BaseActivity implements CameraDialog.CameraDialogParent {
 

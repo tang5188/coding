@@ -2,28 +2,24 @@ package rf.com.uvccamera.doubleScreen;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
 import android.hardware.display.DisplayManager;
 import android.media.MediaPlayer;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.WindowManager;
-import android.widget.LinearLayout;
-import android.widget.VideoView;
 
 import java.io.File;
 import java.io.IOException;
 
 import rf.com.uvccamera.R;
-import rf.com.uvccamera.application.MyApplication;
 
+/**
+ * rf视频测试，循环播放视频：rf.com.uvccamera1.R
+ */
 public class ScreenMainActivity extends Activity {
 
     private DisplayManager displayManager;

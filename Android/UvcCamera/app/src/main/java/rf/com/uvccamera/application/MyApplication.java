@@ -2,9 +2,6 @@ package rf.com.uvccamera.application;
 
 import android.app.Application;
 import android.content.Context;
-import android.hardware.display.DisplayManager;
-import android.util.Log;
-import android.view.Display;
 
 public class MyApplication extends Application {
 

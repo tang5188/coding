@@ -3,18 +3,14 @@ package rf.com.uvccamera.doubleScreen;
 import android.annotation.TargetApi;
 import android.app.Presentation;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.graphics.SurfaceTexture;
 import android.media.MediaPlayer;
 import android.os.Build;
-import android.support.annotation.RequiresApi;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.TextureView;
-import android.widget.VideoView;
 
 import java.io.File;
 import java.io.IOException;

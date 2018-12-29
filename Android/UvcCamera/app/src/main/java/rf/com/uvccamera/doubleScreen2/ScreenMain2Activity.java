@@ -22,6 +22,7 @@ import rf.com.uvccamera.R;
 
 /**
  * 参考文档：http://www.cnblogs.com/IWings/p/6094708.html
+ * rf双屏测试，循环播放图片：rf.com.uvccamera.R
  */
 public class ScreenMain2Activity extends Activity implements BaseSliderView.OnSliderClickListener, ViewPagerEx.OnPageChangeListener {
 
