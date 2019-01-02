@@ -1,6 +1,7 @@
 package com.tang.fingerandroid;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -10,7 +11,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.tang.fingerandroid.utils.PrefUtils;
 import com.za.finger.ZAandroid;
 
 /**
@@ -23,43 +26,40 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Button btnOpenDevice, btnCloseDevice, btnRegistFinger, btnSearchFinger, btnDownChar1, btnDownChar2, btnReadCount, btnClearAll, btnClearSpec;
     private TextView tvDeviceMsg, tvRegistMsg, tvSearchMsg, tvDownMsg, tvCharCountMsg, tvFingerCharMsg;
     private EditText etSpecPageID;
-
+    //模块开发接口
     private ZAandroid a6 = new ZAandroid();
-    //设备地址
-    private int DEV_ADDR = 0xffffffff;
-    //同参数：（0:256x288 1:256x360）
-    private int IMG_SIZE = 0;
-
-    private int defDeviceType = 11;
-    private int defiCom = 32;
-    private int defiBaud = 12;
-
-    //指纹模式是否正常打开
+    private final int DEV_ADDR = 0xffffffff;      //设备地址
+    private final int IMG_SIZE = 0;               //同参数：（0:256x288 1:256x360）
+    //设备打开的参数
+    private int defDeviceType = 11;     //(兼容050)设备类型（11：串口设备）
+    private int defiCom = 32;           //"/dev/ttyHSL2"
+    private int defiBaud = 12;          //115200
+    //指纹模块是否正常打开
     private boolean isOpen = false;
-
+    private boolean isSearchContinue = false;   //连续搜索功能
+    //操作计时
     private long sStart = System.currentTimeMillis();
     private long sEnd = System.currentTimeMillis();
-
+    //正在操作的模式
     private boolean fpRegist = false;   //正在注册指纹的标志：true非注册模式，false注册模式
     private boolean fpSearch = false;   //正在搜索指纹的标志：true非搜索模式，false搜索模式
-    private HandlerThread mThread;
-    private Handler objHandler_fp;
-
-    private int iPageID = 0;
-    private int iBufferID = 1;
-    private byte[] pTemplateBase = new byte[2304];
-    private boolean isFingerOn = false;
-    private int testCount = 0;
+    private HandlerThread mThread_regist;
+    private HandlerThread mThread_search;
+    private Handler mHandler_regist;
+    private Handler mHandler_search;
+    //其他参数
+    private int iPageID = 0;        //指纹模板号
+    private int iBufferID = 1;      //缓冲区号（1、2）
+    private byte[] pTemplateBase = new byte[2304];      //缓冲字节数组数据
+    private boolean isFingerOn = false;                 //设备上是否检测到指纹
+    private int testCount = 0;                          //重试次数
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mThread = new HandlerThread("MyHandlerThread");
-        mThread.start();
-        objHandler_fp = new Handler();
-
+        initIPageID();
         btnOpenDevice = findViewById(R.id.btn_open_device);
         btnCloseDevice = findViewById(R.id.btn_close_device);
         btnRegistFinger = findViewById(R.id.btn_regist_finger);
@@ -121,6 +121,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         }
     }
 
+    // region 打开、关闭设备
     //打开设备
     private void OpenDevice() {
         if (isOpen) return;
@@ -151,44 +152,53 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //关闭设备
     private void CloseDevice() {
         if (!isOpen) return;
+        if (isSearchContinue) return;
         setFlag(true);
         int ret = a6.ZAZCloseDeviceEx();
         Log.i(TAG, "ZAZCloseDeviceEx:" + ret);
         isOpen = false;
         tvDeviceMsg.setText("指纹模块已关闭");
     }
+    // endregion
 
     // region 注册指纹
     //注册指纹
     private void RegistFinger() {
         if (!isOpen) return;
+        if (isSearchContinue) return;
 
         setFlag(true);
         waitSleep(500);
         fpRegist = false;
-        objHandler_fp.removeCallbacks(fpRegistTasks);
-        objHandler_fp.removeCallbacks(fpSearchTasks);
+        if (mHandler_regist != null) mHandler_regist.removeCallbacks(fpTasksRegist);
+        if (mHandler_search != null) mHandler_search.removeCallbacks(fpTasksSearch);
 
         sStart = System.currentTimeMillis();
         sEnd = System.currentTimeMillis();
         iBufferID = 1;
         isFingerOn = false;
         testCount = 0;
-        objHandler_fp.postDelayed(fpRegistTasks, 0);
+
+        mThread_regist = new HandlerThread("MyHandlerThread_regist");
+        mThread_regist.start();
+        mHandler_regist = new Handler(mThread_regist.getLooper());
+        mHandler_regist.post(fpTasksRegist);
     }
 
-    private Runnable fpRegistTasks = new Runnable() {
+    private Runnable fpTasksRegist = new Runnable() {
         @Override
         public void run() {
             sEnd = System.currentTimeMillis();
             //注册超时
             if (sEnd - sStart > 10000) {
-                tvRegistMsg.setText("读取指纹等待超时【已终止】");
+                showMsg(tvRegistMsg, "读取指纹等待超时【已终止】");
+                quitThread(mThread_regist);
                 return;
             }
             //注册停止
             if (fpRegist) {
-                tvRegistMsg.setText("注册主动停止【已终止】");
+                showMsg(tvRegistMsg, "注册主动停止【已终止】");
+                quitThread(mThread_regist);
                 return;
             }
 
@@ -201,9 +211,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             Log.i(TAG, "ZAZGetImage:" + nRet);
             if (nRet == a6.PS_OK) {
                 if (isFingerOn) {
-                    tvRegistMsg.setText("请重按手指...");
+                    showMsg(tvRegistMsg, "请重按手指...");
                     sStart = System.currentTimeMillis();
-                    objHandler_fp.postDelayed(fpRegistTasks, 100);
+                    mHandler_regist.postDelayed(fpTasksRegist, 100);
                     return;
                 }
                 //获取指纹特征
@@ -215,8 +225,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     nRet = a6.ZAZHighSpeedSearch(DEV_ADDR, iBufferID, 0, 1000, id_iscore);
                     Log.i(TAG, "ZAZHighSpeedSearch:" + nRet);
                     if (nRet == a6.PS_OK) {
-                        tvRegistMsg.setText("指纹已注册，无需重复注册。ID:" + id_iscore[0] + " 【已终止】");
+                        showMsg(tvRegistMsg, "指纹已注册，无需重复注册。ID:" + id_iscore[0] + " 【已终止】");
                         DispFingerCharByPageID(id_iscore[0], iBufferID);
+                        quitThread(mThread_regist);
                     } else {
                         iBufferID++;
                         isFingerOn = true;
@@ -226,48 +237,53 @@ public class MainActivity extends Activity implements View.OnClickListener {
                             nRet = a6.ZAZRegModule(DEV_ADDR);
                             Log.i(TAG, "ZAZRegModule:" + nRet);
                             if (nRet != a6.PS_OK) {
-                                tvRegistMsg.setText("合成模板失败，请重新注册指纹【已终止】");
+                                showMsg(tvRegistMsg, "合成模板失败，请重新注册指纹【已终止】");
+                                quitThread(mThread_regist);
                             } else {
                                 //将指纹特征保存
-                                nRet = a6.ZAZStoreChar(DEV_ADDR, 1, iPageID);
+                                nRet = a6.ZAZStoreChar(DEV_ADDR, 1, getIPageID());
                                 Log.i(TAG, "ZAZStoreChar:" + nRet);
                                 if (nRet == a6.PS_OK) {
-                                    tvRegistMsg.setText("注册指纹成功！！！ ID:" + iPageID);
-                                    iPageID++;
+                                    showMsg(tvRegistMsg, "注册指纹成功！！！ ID:" + getIPageID());
+                                    increaseIPageID();
                                     DispFingerCharByBufferID(1);
+                                    quitThread(mThread_regist);
                                 } else {
-                                    tvRegistMsg.setText("注册指纹失败【已终止】");
+                                    showMsg(tvRegistMsg, "注册指纹失败【已终止】");
+                                    quitThread(mThread_regist);
                                 }
                             }
                         } else {
-                            tvRegistMsg.setText("本次获取指纹成功...");
+                            showMsg(tvRegistMsg, "本次获取指纹成功...");
                             sStart = System.currentTimeMillis();
-                            objHandler_fp.postDelayed(fpRegistTasks, 500);
+                            mHandler_regist.postDelayed(fpTasksRegist, 500);
                         }
                     }
                 } else {
-                    tvRegistMsg.setText("特征太差，请重新录入...");
+                    showMsg(tvRegistMsg, "特征太差，请重新录入...");
                     sStart = System.currentTimeMillis();
-                    objHandler_fp.postDelayed(fpRegistTasks, 1000);
+                    mHandler_regist.postDelayed(fpTasksRegist, 1000);
                 }
             } else if (nRet == a6.PS_NO_FINGER) {
                 isFingerOn = false;
-                tvRegistMsg.setText(iBufferID + "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
-                objHandler_fp.postDelayed(fpRegistTasks, 10);
+                showMsg(tvRegistMsg, iBufferID + "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
+                mHandler_regist.postDelayed(fpTasksRegist, 10);
             } else if (nRet == a6.PS_GET_IMG_ERR) {
-                tvRegistMsg.setText("图像获取中...");
-                objHandler_fp.postDelayed(fpRegistTasks, 10);
+                showMsg(tvRegistMsg, "图像获取中...");
+                mHandler_regist.postDelayed(fpTasksRegist, 10);
             } else if (nRet == -2) {
                 testCount++;
                 if (testCount < 3) {
                     isFingerOn = false;
-                    tvRegistMsg.setText(iBufferID + "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
-                    objHandler_fp.postDelayed(fpRegistTasks, 10);
+                    showMsg(tvRegistMsg, iBufferID + "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
+                    mHandler_regist.postDelayed(fpTasksRegist, 10);
                 } else {
-                    tvRegistMsg.setText("通讯异常【已终止】");
+                    showMsg(tvRegistMsg, "通讯异常【已终止】");
+                    quitThread(mThread_regist);
                 }
             } else {
-                tvRegistMsg.setText("通讯异常【已终止】");
+                showMsg(tvRegistMsg, "通讯异常【已终止】");
+                quitThread(mThread_regist);
             }
         }
     };
@@ -276,32 +292,52 @@ public class MainActivity extends Activity implements View.OnClickListener {
     // region 搜索指纹
     private void SearchFinger() {
         if (!isOpen) return;
+        if (isSearchContinue) {         //停止连续搜索
+            isSearchContinue = false;
+            setFlag(true);
+            waitSleep(600);
+            quitThread(mThread_search);
+            if (mHandler_regist != null) mHandler_regist.removeCallbacks(fpTasksRegist);
+            if (mHandler_search != null) mHandler_search.removeCallbacks(fpTasksSearch);
+            showMsg(tvSearchMsg, "");
+            btnSearchFinger.setTextColor(Color.parseColor("#000000"));
+            return;
+        } else {                        //开始连续搜索
+            isSearchContinue = true;
+            btnSearchFinger.setTextColor(Color.parseColor("#0000ff"));
+        }
 
         setFlag(true);
         waitSleep(500);
         fpSearch = false;
-        objHandler_fp.removeCallbacks(fpRegistTasks);
-        objHandler_fp.removeCallbacks(fpSearchTasks);
+        if (mHandler_regist != null) mHandler_regist.removeCallbacks(fpTasksRegist);
+        if (mHandler_search != null) mHandler_search.removeCallbacks(fpTasksSearch);
 
         sStart = System.currentTimeMillis();
         sEnd = System.currentTimeMillis();
         iBufferID = 1;
         testCount = 0;
-        objHandler_fp.postDelayed(fpSearchTasks, 0);
+
+        mThread_search = new HandlerThread("MyHandlerThread_search");
+        mThread_search.start();
+        mHandler_search = new Handler(mThread_search.getLooper());
+        mHandler_search.post(fpTasksSearch);
     }
 
-    private Runnable fpSearchTasks = new Runnable() {
+    private Runnable fpTasksSearch = new Runnable() {
         @Override
         public void run() {
             sEnd = System.currentTimeMillis();
             //搜索超时
-            if (sEnd - sStart > 10000) {
-                tvSearchMsg.setText("读取指纹等待超时【已终止】");
+            if (sEnd - sStart > 10000 && !isSearchContinue) {
+                showMsg(tvSearchMsg, "读取指纹等待超时【已终止】");
+                quitThread(mThread_search);
                 return;
             }
             //搜索停止
             if (fpSearch) {
-                tvSearchMsg.setText("搜索主动停止【已终止】");
+                showMsg(tvSearchMsg, "搜索主动停止【已终止】");
+                quitThread(mThread_search);
                 return;
             }
 
@@ -320,36 +356,61 @@ public class MainActivity extends Activity implements View.OnClickListener {
                     nRet = a6.ZAZHighSpeedSearch(DEV_ADDR, iBufferID, 0, 1000, id_iscore);
                     Log.i(TAG, "ZAZHighSpeedSearch:" + nRet);
                     if (nRet == a6.PS_OK) {
-                        tvSearchMsg.setText("搜索指纹成功！！！ID:" + id_iscore[0]);
+                        showMsg(tvSearchMsg, "搜索指纹成功！！！ID:" + id_iscore[0]);
                         //查询到模块中的指纹特征值，将其下载到2号缓冲区，并展示
                         DispFingerCharByPageID(id_iscore[0], 2);
+                        //继续搜索
+                        if (isSearchContinue) {
+                            sStart = System.currentTimeMillis();
+                            mHandler_search.postDelayed(fpTasksSearch, 400);
+                        } else {
+                            quitThread(mThread_search);
+                        }
                     } else {
-                        tvSearchMsg.setText("搜索指纹失败【已终止】");
+                        showMsg(tvSearchMsg, "搜索指纹失败【已终止】");
                         //未搜索到模块中的指纹特征值，展示当前指纹特征值
                         DispFingerCharByBufferID(1);
+                        //继续搜索
+                        if (isSearchContinue) {
+                            mHandler_search.postDelayed(fpTasksSearch, 400);
+                        } else {
+                            quitThread(mThread_search);
+                        }
                     }
                 } else {
-                    tvSearchMsg.setText("特征太差，请重新录入...");
+                    showMsg(tvSearchMsg, "特征太差，请重新录入...");
                     sStart = System.currentTimeMillis();
-                    objHandler_fp.postDelayed(fpSearchTasks, 1000);
+                    mHandler_search.postDelayed(fpTasksSearch, 1000);
                 }
             } else if (nRet == a6.PS_NO_FINGER) {
-                tvSearchMsg.setText("正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
-                objHandler_fp.postDelayed(fpSearchTasks, 10);
+                showMsg(tvSearchMsg, "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
+                mHandler_search.postDelayed(fpTasksSearch, 400);
             } else if (nRet == a6.PS_GET_IMG_ERR) {
-                tvSearchMsg.setText("图像获取中...");
-                objHandler_fp.postDelayed(fpSearchTasks, 10);
+                showMsg(tvSearchMsg, "图像获取中...");
+                mHandler_search.postDelayed(fpTasksSearch, 400);
             } else if (nRet == -2) {
                 testCount++;
                 if (testCount < 3) {
                     isFingerOn = false;
-                    tvRegistMsg.setText(iBufferID + "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
-                    objHandler_fp.postDelayed(fpSearchTasks, 10);
+                    showMsg(tvSearchMsg, iBufferID + "正在读取指纹中...剩余时间：" + ((10000 - sEnd + sStart) / 1000 + "s"));
+                    mHandler_search.postDelayed(fpTasksSearch, 400);
                 } else {
-                    tvRegistMsg.setText("通讯异常【已终止】");
+                    showMsg(tvSearchMsg, "通讯异常【已终止】");
+                    //继续搜索
+                    if (isSearchContinue) {
+                        mHandler_search.postDelayed(fpTasksSearch, 400);
+                    } else {
+                        quitThread(mThread_search);
+                    }
                 }
             } else {
-                tvRegistMsg.setText("通讯异常【已终止】");
+                showMsg(tvSearchMsg, "通讯异常【已终止】");
+                //继续搜索
+                if (isSearchContinue) {
+                    mHandler_search.postDelayed(fpTasksSearch, 400);
+                } else {
+                    quitThread(mThread_search);
+                }
             }
         }
     };
@@ -368,8 +429,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
         setFlag(true);
         waitSleep(500);
-        objHandler_fp.removeCallbacks(fpRegistTasks);
-        objHandler_fp.removeCallbacks(fpSearchTasks);
+        if (mHandler_regist != null) mHandler_regist.removeCallbacks(fpTasksRegist);
+        if (mHandler_search != null) mHandler_search.removeCallbacks(fpTasksSearch);
 
         int specPageID = bufferID == 1 ? specPageID1 : specPageID2;
         String testFingerChars = bufferID == 1 ? testFingerChars1 : testFingerChars2;
@@ -411,42 +472,49 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //获取指纹有效数量
     private void ReadValidFingerCount() {
         if (!isOpen) return;
+        if (isSearchContinue) return;
         setFlag(true);
         int[] iMbNum = new int[2];
         int nRet = a6.ZAZTemplateNum(DEV_ADDR, iMbNum);
         if (nRet == a6.PS_OK) {
-            tvCharCountMsg.setText(iMbNum[0] + "个");
+            showMsg(tvCharCountMsg, iMbNum[0] + "个");
         } else {
-            tvCharCountMsg.setText("-1个");
+            showMsg(tvCharCountMsg, "-1个");
         }
     }
 
     //清空全部指纹
     private void ClearAll() {
         if (!isOpen) return;
+        if (isSearchContinue) return;
         setFlag(true);
         int nRet = a6.ZAZEmpty(DEV_ADDR);
         if (nRet == a6.PS_OK) {
-            tvCharCountMsg.setText("清空成功");
+            clearIPageID();
+            showMsg(tvCharCountMsg, "清空成功");
         } else {
-            tvCharCountMsg.setText("清空失败");
+            showMsg(tvCharCountMsg, "清空失败");
         }
     }
 
     //删除指定指纹
     private void ClearSpec() {
         if (!isOpen) return;
+        if (isSearchContinue) return;
         String sPageID = etSpecPageID.getText().toString();
-        if (TextUtils.isEmpty(sPageID)) return;
+        if (TextUtils.isEmpty(sPageID)) {
+            Toast.makeText(MainActivity.this, "请输入要删除的指纹号", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         setFlag(true);
         int iStartPageID = Integer.parseInt(sPageID);
         int iDelPageNum = 1;
         int nRet = a6.ZAZDelChar(DEV_ADDR, iStartPageID, iDelPageNum);
         if (nRet == a6.PS_OK) {
-            tvCharCountMsg.setText("删除成功:" + iStartPageID);
+            showMsg(tvCharCountMsg, "删除成功:" + iStartPageID);
         } else {
-            tvCharCountMsg.setText("删除失败:" + iStartPageID);
+            showMsg(tvCharCountMsg, "删除失败:" + iStartPageID);
         }
     }
     // endregion
@@ -470,7 +538,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         Log.i(TAG, "ZAZUpChar:" + nRet + ", length:" + iTemplateLength[0]);
         if (nRet == a6.PS_OK) {
             String fingerChar = byteArrToHexString(pTemplateBase, iTemplateLength[0]);
-            tvFingerCharMsg.setText("当前指纹特征值：" + fingerChar);
+            Toast.makeText(MainActivity.this, "当前指纹特征值：" + fingerChar, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -488,9 +556,16 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //执行等待
     private void waitSleep(long millis) {
         try {
-            mThread.sleep(millis);
+            Thread.sleep(millis);
         } catch (InterruptedException e) {
             e.printStackTrace();
+        }
+    }
+
+    private void quitThread(HandlerThread mThread) {
+        if (mThread != null) {
+            mThread.quit();
+            mThread = null;
         }
     }
 
@@ -518,6 +593,37 @@ public class MainActivity extends Activity implements View.OnClickListener {
             bytes[i] = (byte) (Integer.parseInt(subStr, 16) & 0xFF);
         }
         return bytes;
+    }
+
+    private void showMsg(final TextView tvMsg, final String msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                tvMsg.setText(msg);
+            }
+        });
+    }
+
+    //初始化模板号
+    public void initIPageID() {
+        iPageID = PrefUtils.getInt(MainActivity.this, "finger_iPageID", 0);
+    }
+
+    //清空模板号
+    public void clearIPageID() {
+        iPageID = 0;
+        PrefUtils.putInt(MainActivity.this, "finger_iPageID", iPageID);
+    }
+
+    //取得模板号
+    public int getIPageID() {
+        return iPageID;
+    }
+
+    //自增模板号
+    public void increaseIPageID() {
+        iPageID++;
+        PrefUtils.putInt(MainActivity.this, "finger_iPageID", iPageID);
     }
     // endregion
 }
